@@ -7,7 +7,7 @@ const createWindow = () => {
   })
   // 開発ツールを有効化
   win.webContents.openDevTools();
-  win.loadFile('./views/config.html')
+  win.loadFile('./views/build/index.html')
 }
 
 app.whenReady().then(() => {
