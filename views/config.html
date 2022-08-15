@@ -5,23 +5,25 @@
     <title>設定</title>
     <link href="../lib/bootstrap-5.0.2-dist/css/bootstrap.css" rel="stylesheet">
     <script type="text/javascript" src="../lib/bootstrap-5.0.2-dist/js/bootstrap.js"></script>
-    <style>
-    .red {
-      background-color: red;
-    }
-    .blue {
-      background-color: blue;
-    }
-    </style>
   </head>
   <body>
     <h1>設定</h1>
     <div class="container">
       <div class="row">
-        <div class="col-6 red">hoge</div>
-        <div class="col-6 blue">fuga</div>
+        <div class="mb-3">
+          <label for="redmine-url" class="form-label">Redmine API URL</label>
+          <input type="text" class="form-control" id="redmine-url" placeholder="https://xxx.redmine.com">
+        </div>
+        <div class="mb-3">
+          <label for="issue-id" class="form-label">疎通確認用Issue ID</label>
+          <input type="text" class="form-control" id="issue-id" placeholder="">
+        </div>
+        <div class="mb-3">
+          <label for="issue-title" class="form-label">疎通確認用Issueのタイトル</label>
+          <input type="text" class="form-control" id="issue-title">
+        </div>
       </div>
     </div>
-    <button class="btn-sm btn-primary">hoge</button>
+    <button class="btn btn-primary">疎通確認</button>
   </body>
 </html>
