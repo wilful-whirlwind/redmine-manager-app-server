@@ -1,6 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import './index.css';
+import {TitleLabel} from './components/title-label/title-label';
+import { Helmet } from "react-helmet"
 
 class Square extends React.Component {
     render() {
@@ -28,8 +30,10 @@ class Board extends React.Component {
         };
     }
 
-    handleClick(i, j) {
+    async handleClick(i, j) {
         console.log(i,j);
+        const filePath = await window.electronAPI.openFile()
+        console.log(filePath);
         let currentSquares = this.state.squares;
         const nextPlayer = this.state.currentPlayer === "X" ? "0" : "X";
         currentSquares[i][j] = nextPlayer;
@@ -71,16 +75,47 @@ class Board extends React.Component {
     }
 }
 
-class Game extends React.Component {
+const Head = (props) => {
+    const {title} = props
+    return (
+        <Helmet>
+            <title>{title}</title>
+            <link rel="stylesheet" href="../public/lib/bootstrap-5.0.2-dist/css/bootstrap.css" />
+            <script src="../public/lib/bootstrap-5.0.2-dist/js/bootstrap.js"></script>
+        </Helmet>
+    )
+}
+
+class Top extends React.Component {
     render() {
         return (
-            <div className="game">
-                <div className="game-board">
-                    <Board currentPlayer="X"/>
-                </div>
-                <div className="game-info">
-                    <div>{/* status */}</div>
-                    <ol>{/* TODO */}</ol>
+            <div class="top">
+                <Head title="test"></Head>
+                <div className="container">
+                    <div className="row">
+                        <div className="col-3">
+                            <div className="version-area">
+                                <TitleLabel label="version"></TitleLabel>
+                            </div>
+                        </div>
+                        <div className="col-9">
+                            <div className="version-area">
+                                <TitleLabel label="version"></TitleLabel>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-9">
+                            <div className="version-area">
+                                <TitleLabel label="version"></TitleLabel>
+                            </div>
+                        </div>
+                        <div className="col-3">
+                            <div className="version-area">
+                                <TitleLabel label="version"></TitleLabel>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -89,5 +124,7 @@ class Game extends React.Component {
 
 // ========================================
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<Game />);
+ReactDOM.render(
+    <Top />,
+    document.getElementById('root')
+);
