@@ -3,15 +3,23 @@ const path = require("path");
 const handleFileOpen = require("./actions/fileDialogAction");
 
 const createWindow = () => {
+  const width = 700;
+  const height = 600;
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: width,
+    height: height,
+    minHeight: height,
+    minWidth: width,
+    maxHeight: height,
+    maxWidth: width,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
-    }
+    },
+    fullscreen: false,
+    frame: true
   })
   // 開発ツールを有効化
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
   win.loadFile('./views/build/index.html')
 }
 
