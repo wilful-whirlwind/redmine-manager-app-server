@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import {TitleLabel} from './components/title-label/title-label';
 import { Helmet } from "react-helmet"
+import {RedmineProject} from "./pages/redmine-project";
+import {SideMenu} from "./components/side-menu/side-menu";
+
 
 class Square extends React.Component {
     render() {
@@ -75,46 +77,33 @@ class Board extends React.Component {
     }
 }
 
-const Head = (props) => {
-    const {title} = props
-    return (
-        <Helmet>
-            <title>{title}</title>
-            <link rel="stylesheet" href="../public/lib/bootstrap-5.0.2-dist/css/bootstrap.css" />
-            <script src="../public/lib/bootstrap-5.0.2-dist/js/bootstrap.js"></script>
-        </Helmet>
-    )
+class Head extends React.Component {
+    constructor(props) {
+        super(props);
+        this.title = props.title;
+    }
+    render() {
+        return (
+            <Helmet>
+                <title>{this.title}</title>
+                <link rel="stylesheet" href="../public/lib/bootstrap-5.0.2-dist/css/bootstrap.css"/>
+                <script src="../public/lib/bootstrap-5.0.2-dist/js/bootstrap.js"></script>
+            </Helmet>
+        );
+    }
 }
 
 class Top extends React.Component {
     render() {
         return (
-            <div class="top">
-                <Head title="test"></Head>
-                <div className="container">
-                    <div className="row">
-                        <div className="col-3">
-                            <div className="version-area">
-                                <TitleLabel label="version"></TitleLabel>
-                            </div>
-                        </div>
-                        <div className="col-9">
-                            <div className="version-area">
-                                <TitleLabel label="version"></TitleLabel>
-                            </div>
-                        </div>
+            <div class="top container-fluid">
+                <Head title="Project Manager" />
+                <div class="row" id="content-field">
+                    <div class="col-3" id="side-menu-field">
+                        <SideMenu />
                     </div>
-                    <div className="row">
-                        <div className="col-9">
-                            <div className="version-area">
-                                <TitleLabel label="version"></TitleLabel>
-                            </div>
-                        </div>
-                        <div className="col-3">
-                            <div className="version-area">
-                                <TitleLabel label="version"></TitleLabel>
-                            </div>
-                        </div>
+                    <div class="col-9" id="main-content-field">
+                        <RedmineProject />
                     </div>
                 </div>
             </div>
