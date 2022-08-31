@@ -1,9 +1,33 @@
-import React from "react";
+import React, {useRef} from "react";
 import {TitleLabel} from "../components/title-label/title-label";
 import {SectionLabel} from "../components/section-label/section-label";
 import {InputText} from "../components/input-text/input-text";
 
 export class RedmineProject extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            majorVersion: "",
+            minorVersion: "",
+            maintenanceVersion: "",
+            developmentPeriodFrom: "",
+            developmentPeriodTo: "",
+            qaPeriodFrom: "",
+            qaPeriodTo: "",
+            releaseDate: ""
+        }
+        this.getInputTextValue = this.getInputTextValue.bind(this);
+    }
+
+    //stateのcountの値を更新するコールバック関数
+    getInputTextValue( name, value ){
+        let state = {};
+        state[name] = value;
+        this.setState(state) ;
+    }
+    async send() {
+        await window.electronAPI.openFile(this.state);
+    }
     render() {
         return (
             <div class="content-main">
@@ -20,13 +44,13 @@ export class RedmineProject extends React.Component {
                     <tbody>
                     <tr>
                         <td>
-                            <InputText id="major-version" />
+                            <InputText id="majorVersion" callback={this.getInputTextValue} />
                         </td>
                         <td>
-                            <InputText id="minor-version" />
+                            <InputText id="minorVersion" callback={this.getInputTextValue} />
                         </td>
                         <td>
-                            <InputText id="maintenance-version" />
+                            <InputText id="maintenanceVersion" callback={this.getInputTextValue} />
                         </td>
                     </tr>
                     </tbody>
@@ -39,13 +63,13 @@ export class RedmineProject extends React.Component {
                             開発期間
                         </th>
                         <td>
-                            <InputText id="development-period-from" />
+                            <InputText id="developmentPeriodFrom" callback={this.getInputTextValue} />
                         </td>
                         <td>
                             ~
                         </td>
                         <td>
-                            <InputText id="development-period-to" />
+                            <InputText id="developmentPeriodTo" callback={this.getInputTextValue} />
                         </td>
                     </tr>
                     <tr>
@@ -53,13 +77,13 @@ export class RedmineProject extends React.Component {
                             QA期間
                         </th>
                         <td>
-                            <InputText id="qa-period-from" />
+                            <InputText id="qaPeriodFrom" callback={this.getInputTextValue} />
                         </td>
                         <td>
                             ~
                         </td>
                         <td>
-                            <InputText id="qa-period-to" />
+                            <InputText id="qaPeriodTo" callback={this.getInputTextValue} />
                         </td>
                     </tr>
                     <tr>
@@ -67,7 +91,7 @@ export class RedmineProject extends React.Component {
                             リリース日
                         </th>
                         <td>
-                            <InputText id="release-date" />
+                            <InputText id="releaseDate" callback={this.getInputTextValue} />
                         </td>
                         <td>
                         </td>
@@ -76,6 +100,7 @@ export class RedmineProject extends React.Component {
                     </tr>
                     </tbody>
                 </table>
+                <button class="btn btn-outline-primary" onClick={() => this.send()}></button>
             </div>
         );
     }

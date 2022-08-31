@@ -19,11 +19,26 @@ export class InputText extends React.Component {
         } else {
             this.maxLength = props.maxLength;
         }
+        this.state = { callback : this.props.callback};
+        this.bindValue = this.bindValue.bind(this);
+    }
+
+    bindValue(event) {
+        console.log(this.id, event.target.value);
+        this.state.callback(this.id, event.target.value);
     }
 
     render() {
         return (
-            <input type="text" class="form-control" id={this.id} name={this.name} maxLength={this.maxLength} />
+            <input
+                type="text"
+                onChange={( event ) => { this.bindValue(event); }}
+                class="form-control"
+                id={this.id}
+                name={this.name}
+                maxLength={this.maxLength}
+                value={this.value}
+            />
         );
     }
 }

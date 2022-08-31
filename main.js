@@ -24,7 +24,7 @@ const createWindow = () => {
 }
 
 app.whenReady().then(() => {
-  ipcMain.handle('dialog:openFile', handleFileOpen)
+  ipcMain.on('dialog:openFile', handleFileOpen)
   createWindow()
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) {
