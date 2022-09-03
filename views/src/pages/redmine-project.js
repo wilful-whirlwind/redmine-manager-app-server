@@ -100,7 +100,7 @@ export class RedmineProject extends React.Component {
                     </tr>
                     </tbody>
                 </table>
-                <button class="btn btn-outline-primary" onClick={() => this.send()}></button>
+                <button class="btn btn-outline-primary" onClick={() => this.send()}>バージョン生成</button>
             </div>
         );
     }

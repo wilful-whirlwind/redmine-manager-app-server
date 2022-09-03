@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require("path");
-const handleFileOpen = require("./actions/fileDialogAction");
+const handleFileOpen = require("./action/fileDialogAction");
 
 const createWindow = () => {
   const width = 700;
@@ -19,7 +19,7 @@ const createWindow = () => {
     frame: true
   })
   // 開発ツールを有効化
-  // win.webContents.openDevTools();
+  win.webContents.openDevTools();
   win.loadFile('./views/build/index.html')
 }
 

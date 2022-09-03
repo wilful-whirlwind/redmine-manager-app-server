@@ -19,5 +19,8 @@
   "homepage": "https://github.com/wilful-whirlwind/redmine-manager#readme",
   "devDependencies": {
     "electron": "^20.0.2"
+  },
+  "dependencies": {
+    "axios": "^0.27.2"
   }
 }
