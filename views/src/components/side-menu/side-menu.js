@@ -1,6 +1,6 @@
 import React from 'react';
 import './side-menu.css';
-import {BrowserRouter, Link, Route, Routes} from "react-router-dom";
+import {Link} from "react-router-dom";
 
 export class SideMenu extends React.Component {
     constructor(props) {
