@@ -3,8 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { Helmet } from "react-helmet"
 import {RedmineProject} from "./pages/redmine-project";
+import {Config} from "./pages/config";
 import {SideMenu} from "./components/side-menu/side-menu";
-
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {Management} from "./pages/management";
+import {Reports} from "./pages/reports";
+import {Home} from "./pages/home";
 
 class Square extends React.Component {
     render() {
@@ -34,7 +38,7 @@ class Board extends React.Component {
 
     async handleClick(i, j) {
         console.log(i,j);
-        const filePath = await window.electronAPI.openFile()
+        const filePath = await window.electronAPI.initializeVersion()
         console.log(filePath);
         let currentSquares = this.state.squares;
         const nextPlayer = this.state.currentPlayer === "X" ? "0" : "X";
@@ -97,15 +101,25 @@ class Top extends React.Component {
     render() {
         return (
             <div class="top container-fluid">
+                <script src="../public/ipc/ipc.js"></script>
                 <Head title="Project Manager" />
-                <div class="row" id="content-field">
-                    <div class="col-3" id="side-menu-field">
-                        <SideMenu />
+                <BrowserRouter>
+                    <div class="row" id="content-field">
+                        <div class="col-3" id="side-menu-field">
+                            <SideMenu />
+                        </div>
+                        <div class="col-9" id="main-content-field">
+                                <Routes>
+                                    <Route path="/" element={<Home />} />
+                                    <Route path="/home" element={<Home />} />
+                                    <Route path="/redmine-project" element={<RedmineProject />} />
+                                    <Route path="/management" element={<Management />} />
+                                    <Route path="/reports" element={<Reports />} />
+                                    <Route path="/config" element={<Config />} />
+                                </Routes>
+                        </div>
                     </div>
-                    <div class="col-9" id="main-content-field">
-                        <RedmineProject />
-                    </div>
-                </div>
+                </BrowserRouter>
             </div>
         );
     }

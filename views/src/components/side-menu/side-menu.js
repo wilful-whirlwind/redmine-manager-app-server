@@ -1,5 +1,6 @@
 import React from 'react';
 import './side-menu.css';
+import {BrowserRouter, Link, Route, Routes} from "react-router-dom";
 
 export class SideMenu extends React.Component {
     constructor(props) {
@@ -8,36 +9,36 @@ export class SideMenu extends React.Component {
     render() {
         return (
             <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" id="side-menu">
-                <a href="/"
+                <Link to="/"
                    class="d-flex align-items-center me-md-auto text-white text-decoration-none">
                     <span class="fs-4">Project Management Helper</span>
-                </a>
+                </Link>
                 <hr />
                 <ul class="nav nav-pills flex-column mb-auto">
                     <li class="nav-item">
-                        <a href="#" class="nav-link active" aria-current="page">
+                        <Link to="/home" class="nav-link active" aria-current="page">
                             Home
-                        </a>
+                        </Link>
                     </li>
                     <li>
-                        <a href="#" class="nav-link text-white">
+                        <Link to="/redmine-project" class="nav-link text-white">
                             Project
-                        </a>
+                        </Link>
                     </li>
                     <li>
-                        <a href="#" class="nav-link text-white">
+                        <Link to="/management" class="nav-link text-white">
                             Management
-                        </a>
+                        </Link>
                     </li>
                     <li>
-                        <a href="#" class="nav-link text-white">
+                        <Link to="/reports" class="nav-link text-white">
                             Reports
-                        </a>
+                        </Link>
                     </li>
                     <li>
-                        <a href="#" class="nav-link text-white">
-                            Settings
-                        </a>
+                        <Link to="/config" class="nav-link text-white">
+                            Config
+                        </Link>
                     </li>
                 </ul>
             </div>

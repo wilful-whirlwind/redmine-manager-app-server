@@ -2,6 +2,7 @@ import React, {useRef} from "react";
 import {TitleLabel} from "../components/title-label/title-label";
 import {SectionLabel} from "../components/section-label/section-label";
 import {InputText} from "../components/input-text/input-text";
+import {Message} from "../components/message/message";
 
 export class RedmineProject extends React.Component {
     constructor(props) {
@@ -26,7 +27,10 @@ export class RedmineProject extends React.Component {
         this.setState(state) ;
     }
     async send() {
-        await window.electronAPI.openFile(this.state);
+        console.log("---");
+        const res = await window.electronAPI.initializeVersion(this.state);
+        console.log("---");
+        console.log(res);
     }
     render() {
         return (
@@ -101,6 +105,7 @@ export class RedmineProject extends React.Component {
                     </tbody>
                 </table>
                 <button class="btn btn-outline-primary" onClick={() => this.send()}>バージョン生成</button>
+                <Message message="登録しました。" id="fine"></Message>
             </div>
         );
     }
