@@ -1,5 +1,9 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI',{
-    openFile: function(data) {ipcRenderer.send('dialog:openFile', data); }
+    initializeVersion: function(data) {
+        const res = ipcRenderer.sendSync('dialog:redmineVersion', data);
+        ipcRenderer.send('sendMessage', res);
+    },
+    sendMessage: (callback) => ipcRenderer.on('sendMessage', callback)
 })

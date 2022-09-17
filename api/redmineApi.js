@@ -1,9 +1,9 @@
 const AbstractApi = require("./abstractApi");
 
 module.exports = class RedmineApi extends AbstractApi {
-    static postVersion(versionId, versionInfo) {
+    static async postVersion(versionId, versionInfo) {
         const redmineUrl = "http://49.212.209.129/";
-        this.callPostApi(redmineUrl + "projects/" + versionId + "/versions.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineVersionRequest(versionInfo))
+        return await this.callPostApi(redmineUrl + "projects/" + versionId + "/versions.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineVersionRequest(versionInfo));
     }
 
     static #generateHeader() {

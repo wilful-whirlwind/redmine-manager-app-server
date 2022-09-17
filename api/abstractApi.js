@@ -14,7 +14,8 @@ module.exports = class AbstractApi {
         try {
             response = await axios.post(uri, request, {headers: headers});
         } catch (e) {
-            console.log(e)
+            console.error(e);
+            throw new Error("APIの実行に失敗しました。")
         }
         return response;
     }
