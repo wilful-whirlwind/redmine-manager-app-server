@@ -22,7 +22,7 @@ const createWindow = () => {
     frame: true
   })
   // 開発ツールを有効化
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
   win.loadFile('./views/build/index.html')
 }
 
