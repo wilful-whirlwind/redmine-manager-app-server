@@ -7,16 +7,26 @@ import {Message} from "../components/message/message";
 export class Config extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            majorVersion: "",
-            minorVersion: "",
-            maintenanceVersion: "",
-            developmentPeriodFrom: "",
-            developmentPeriodTo: "",
-            qaPeriodFrom: "",
-            qaPeriodTo: "",
-            releaseDate: ""
+        const savedConfigInfo = window.electronAPI.loadConfig();
+        let defaultConfigInfo = {
+            basicAuthUserId: "",
+            basicAuthPassWord: "",
+            redmineUri: "",
+            redmineAccessToken: "",
+            gasPostScheduleAPIEndPoint: "",
+            gasPostScheduleAPIAccessToken: "",
+            gasPostScheduleAPIProjectFolderId: "",
+            gasPostScheduleAPITemplateProjectFolderId: "",
+            gasPostResultAPIEndPoint: "",
+            gasPostResultAPIAccessToken: "",
+            slackMailAddressForRequestToMember: "",
+            slackMailAddressForNoticeToCS: "",
+            platformAPIAccessToken: ""
+        };
+        for (let key in savedConfigInfo) {
+            defaultConfigInfo[key] = savedConfigInfo[key];
         }
+        this.state = defaultConfigInfo;
         this.getInputTextValue = this.getInputTextValue.bind(this);
     }
 
@@ -24,8 +34,14 @@ export class Config extends React.Component {
     getInputTextValue( name, value ){
         let state = {};
         state[name] = value;
-        this.setState(state) ;
+        console.log(state);
+        this.setState(state);
     }
+
+    async send() {
+        await window.electronAPI.saveConfig(this.state);
+    }
+
     render() {
         return (
             <div class="content-main">
@@ -38,7 +54,7 @@ export class Config extends React.Component {
                             ユーザID
                         </th>
                         <td>
-                            <InputText id="basicAuthUserId" callback={this.getInputTextValue} />
+                            <InputText id="basicAuthUserId" callback={this.getInputTextValue} value={this.state.basicAuthUserId}/>
                         </td>
                     </tr>
                     <tr>
@@ -46,7 +62,7 @@ export class Config extends React.Component {
                             パスワード
                         </th>
                         <td>
-                            <InputText id="basicAuthPassWord" callback={this.getInputTextValue} />
+                            <InputText id="basicAuthPassWord" callback={this.getInputTextValue} value={this.state.basicAuthPassWord}/>
                         </td>
                     </tr>
                     </tbody>
@@ -59,7 +75,7 @@ export class Config extends React.Component {
                             Redmine URI
                         </th>
                         <td>
-                            <InputText id="redmineUri" callback={this.getInputTextValue} />
+                            <InputText id="redmineUri" callback={this.getInputTextValue} value={this.state.redmineUri} />
                         </td>
                     </tr>
                     <tr>
@@ -67,7 +83,7 @@ export class Config extends React.Component {
                             Redmine API<br />アクセストークン
                         </th>
                         <td>
-                            <InputText id="redmineAccessToken" callback={this.getInputTextValue} />
+                            <InputText id="redmineAccessToken" callback={this.getInputTextValue} value={this.state.redmineAccessToken} />
                         </td>
                     </tr>
                     </tbody>
@@ -80,7 +96,7 @@ export class Config extends React.Component {
                             GASスケジュール登録API<br />エンドポイントURL
                         </th>
                         <td>
-                            <InputText id="gasPostScheduleAPIEndPoint" callback={this.getInputTextValue} />
+                            <InputText id="gasPostScheduleAPIEndPoint" callback={this.getInputTextValue} value={this.state.gasPostScheduleAPIEndPoint} />
                         </td>
                     </tr>
                     <tr>
@@ -88,7 +104,7 @@ export class Config extends React.Component {
                             GASスケジュール登録API<br />アクセストークン
                         </th>
                         <td>
-                            <InputText id="gasPostScheduleAPIAccessToken" callback={this.getInputTextValue} />
+                            <InputText id="gasPostScheduleAPIAccessToken" callback={this.getInputTextValue} value={this.state.gasPostScheduleAPIAccessToken} />
                         </td>
                     </tr>
                     <tr>
@@ -96,7 +112,7 @@ export class Config extends React.Component {
                             GASスケジュール登録API<br />PJフォルダ作成先フォルダID
                         </th>
                         <td>
-                            <InputText id="gasPostScheduleAPIProjectFolderId" callback={this.getInputTextValue} />
+                            <InputText id="gasPostScheduleAPIProjectFolderId" callback={this.getInputTextValue} value={this.state.gasPostScheduleAPIProjectFolderId} />
                         </td>
                     </tr>
                     <tr>
@@ -104,7 +120,7 @@ export class Config extends React.Component {
                             GASスケジュール登録API<br />PJフォルダテンプレートフォルダID
                         </th>
                         <td>
-                            <InputText id="gasPostScheduleAPITemplateProjectFolderId" callback={this.getInputTextValue} />
+                            <InputText id="gasPostScheduleAPITemplateProjectFolderId" callback={this.getInputTextValue} value={this.state.gasPostScheduleAPITemplateProjectFolderId} />
                         </td>
                     </tr>
                     <tr>
@@ -112,7 +128,7 @@ export class Config extends React.Component {
                             GAS振り返り資料生成API<br />エンドポイントURL
                         </th>
                         <td>
-                            <InputText id="gasPostResultAPIEndPoint" callback={this.getInputTextValue} />
+                            <InputText id="gasPostResultAPIEndPoint" callback={this.getInputTextValue} value={this.state.gasPostResultAPIEndPoint} />
                         </td>
                     </tr>
                     <tr>
@@ -120,7 +136,7 @@ export class Config extends React.Component {
                             GAS振り返り資料生成API<br />アクセストークン
                         </th>
                         <td>
-                            <InputText id="gasPostResultAPIAccessToken" callback={this.getInputTextValue} />
+                            <InputText id="gasPostResultAPIAccessToken" callback={this.getInputTextValue} value={this.state.gasPostResultAPIAccessToken} />
                         </td>
                     </tr>
                     </tbody>
@@ -133,7 +149,7 @@ export class Config extends React.Component {
                             記載依頼投稿先Slack<br />メールアドレス
                         </th>
                         <td>
-                            <InputText id="slackMailAddressForRequestToMember" callback={this.getInputTextValue} />
+                            <InputText id="slackMailAddressForRequestToMember" callback={this.getInputTextValue} value={this.state.slackMailAddressForRequestToMember} />
                         </td>
                     </tr>
                     <tr>
@@ -141,7 +157,7 @@ export class Config extends React.Component {
                             リリース完了連絡先Slack<br />メールアドレス
                         </th>
                         <td>
-                            <InputText id="slackMailAddressForNoticeToCS" callback={this.getInputTextValue} />
+                            <InputText id="slackMailAddressForNoticeToCS" callback={this.getInputTextValue} value={this.state.slackMailAddressForNoticeToCS} />
                         </td>
                     </tr>
                     </tbody>
@@ -154,7 +170,7 @@ export class Config extends React.Component {
                             プラットフォームAPI<br />アクセストークン
                         </th>
                         <td>
-                            <InputText id="platformAPIAccessToken" callback={this.getInputTextValue} />
+                            <InputText id="platformAPIAccessToken" callback={this.getInputTextValue} value={this.state.platformAPIAccessToken} />
                         </td>
                     </tr>
                     </tbody>

@@ -20,12 +20,14 @@ export class InputText extends React.Component {
             this.maxLength = props.maxLength;
         }
         this.state = { callback : this.props.callback};
+        this.value = props.value ?? "";
         this.bindValue = this.bindValue.bind(this);
     }
 
     bindValue(event) {
         console.log(this.id, event.target.value);
         this.state.callback(this.id, event.target.value);
+        this.value = event.target.value;
     }
 
     render() {

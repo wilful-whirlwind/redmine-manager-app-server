@@ -1,8 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require("path");
 const redmineVersionAction = require("./action/redmineVersionAction");
-const Store = require('electron-store')
-const store = new Store();
+const saveConfigAction = require("./action/saveConfigAction");
+const loadConfigAction = require("./action/loadConfigAction");
 
 let win;
 const createWindow = () => {
@@ -22,7 +22,7 @@ const createWindow = () => {
     frame: true
   })
   // 開発ツールを有効化
-  // win.webContents.openDevTools();
+  win.webContents.openDevTools();
   win.loadFile('./views/build/index.html')
 }
 
@@ -46,4 +46,10 @@ ipcMain.on('sendMessage', function(event, args) {
   win.webContents.send('sendMessage', args);
 });
 
+ipcMain.on('dialog:loadConfig', async function(event, args) {
+  console.log(args);
+  loadConfigAction(event, args);
+});
+
 ipcMain.on('dialog:redmineVersion', redmineVersionAction);
+ipcMain.on('dialog:saveConfig', saveConfigAction);
