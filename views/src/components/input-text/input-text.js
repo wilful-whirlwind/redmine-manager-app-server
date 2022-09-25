@@ -4,7 +4,7 @@ import React from "react";
  * テキスト入力のフォームクラス
  */
 export class InputText extends React.Component {
-    DEFAULT_TEXT_LENGTH = 16;
+    DEFAULT_TEXT_LENGTH = 255;
 
     constructor(props) {
         super(props);

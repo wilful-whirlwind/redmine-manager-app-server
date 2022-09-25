@@ -1,14 +1,17 @@
 const AbstractApi = require("./abstractApi");
+const Store = require('electron-store')
+const store = new Store();
 
 module.exports = class RedmineApi extends AbstractApi {
     static async postVersion(versionId, versionInfo) {
-        const redmineUrl = "http://49.212.209.129/";
-        return await this.callPostApi(redmineUrl + "projects/" + versionId + "/versions.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineVersionRequest(versionInfo));
+        const redmineUrl = store.get("redmineUri");
+        return await this.callPostApi(redmineUrl + "/projects/" + versionId + "/versions.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineVersionRequest(versionInfo));
     }
 
     static #generateHeader() {
+        const accessToken = store.get("redmineAccessToken");
         return {
-            "X-Redmine-API-Key": "5232591c06b5aab0123d65c986873cd620059df1"
+            "X-Redmine-API-Key": accessToken
         }
     }
 
