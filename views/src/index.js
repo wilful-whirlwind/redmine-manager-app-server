@@ -102,21 +102,23 @@ class Top extends React.Component {
         return (
             <div class="top container-fluid">
                 <script src="../public/ipc/ipc.js"></script>
+                <script src="../public/style/style.js"></script>
                 <Head title="Project Manager" />
+
                 <BrowserRouter>
                     <div class="row" id="content-field">
                         <div class="col-3" id="side-menu-field">
                             <SideMenu />
                         </div>
                         <div class="col-9" id="main-content-field">
-                                <Routes>
-                                    <Route path="/" element={<Home />} />
-                                    <Route path="/home" element={<Home />} />
-                                    <Route path="/redmine-project" element={<RedmineProject />} />
-                                    <Route path="/management" element={<Management />} />
-                                    <Route path="/reports" element={<Reports />} />
-                                    <Route path="/config" element={<Config />} />
-                                </Routes>
+                            <Routes>
+                                <Route path="/" element={<Home />} />
+                                <Route path="/home" element={<Home />} />
+                                <Route path="/redmine-project" element={<RedmineProject />} />
+                                <Route path="/management" element={<Management />} />
+                                <Route path="/reports" element={<Reports />} />
+                                <Route path="/config" element={<Config />} />
+                            </Routes>
                         </div>
                     </div>
                 </BrowserRouter>
