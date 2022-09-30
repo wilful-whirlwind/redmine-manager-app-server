@@ -3,6 +3,8 @@ const path = require("path");
 const redmineVersionAction = require("./action/redmineVersionAction");
 const saveConfigAction = require("./action/saveConfigAction");
 const loadConfigAction = require("./action/loadConfigAction");
+const getRedmineTrackerListAction = require("./action/getRedmineTrackerListAction");
+const saveRedmineConfigAction = require("./action/saveRedmineConfigAction")
 
 let win;
 const createWindow = () => {
@@ -51,5 +53,11 @@ ipcMain.on('dialog:loadConfig', async function(event, args) {
   loadConfigAction(event, args);
 });
 
+ipcMain.on('dialog:getRedmineTrackerConfigList', async function(event, args) {
+  console.log(args);
+  await getRedmineTrackerListAction(event, args);
+});
+
 ipcMain.on('dialog:redmineVersion', redmineVersionAction);
 ipcMain.on('dialog:saveConfig', saveConfigAction);
+ipcMain.on('dialog:saveRedmineConfig', saveRedmineConfigAction);

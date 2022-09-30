@@ -31,6 +31,7 @@ module.exports = class AbstractApi {
         let response = null;
         try {
             response = await axios.get(uri, {params: query, headers: headers});
+            console.log(response);
         } catch (e) {
             console.log(e)
         }

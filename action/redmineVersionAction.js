@@ -1,4 +1,4 @@
-const RedmineVersionLogic = require("../logic/redmineVersionLogic");
+const RedmineLogic = require("../logic/redmineLogic");
 const Store = require('electron-store')
 const {app} = require("electron");
 const store = new Store();
@@ -6,9 +6,9 @@ const store = new Store();
 
 module.exports = async function(event, data) {
     console.log(data);
-    const redmineVersionLogic = new RedmineVersionLogic();
+    const redmineLogic = new RedmineLogic();
     try {
-        await redmineVersionLogic.initializeVersionLogic(data.majorVersion, data.minorVersion, data.maintenanceVersion, data.releaseDate);
+        await redmineLogic.initializeVersionLogic(data.majorVersion, data.minorVersion, data.maintenanceVersion, data.releaseDate);
         console.log("sendMessage A");
         store.set("sendMessage","登録しました");
         event.returnValue = "登録しました。";

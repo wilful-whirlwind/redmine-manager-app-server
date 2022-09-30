@@ -9,6 +9,7 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {Management} from "./pages/management";
 import {Reports} from "./pages/reports";
 import {Home} from "./pages/home";
+import {ConfigRedmine} from "./pages/config-redmine";
 
 class Square extends React.Component {
     render() {
@@ -108,7 +109,7 @@ class Top extends React.Component {
                 <BrowserRouter>
                     <div class="row" id="content-field">
                         <div class="col-3" id="side-menu-field">
-                            <SideMenu />
+                            <SideMenu ref={this.defaultPageRef}/>
                         </div>
                         <div class="col-9" id="main-content-field">
                             <Routes>
@@ -118,6 +119,7 @@ class Top extends React.Component {
                                 <Route path="/management" element={<Management />} />
                                 <Route path="/reports" element={<Reports />} />
                                 <Route path="/config" element={<Config />} />
+                                <Route path="/config-redmine" element={<ConfigRedmine />} />
                             </Routes>
                         </div>
                     </div>

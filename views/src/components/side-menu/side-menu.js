@@ -71,6 +71,11 @@ export class SideMenu extends React.Component {
                                         Basic Config
                                     </Link>
                                 </li>
+                                <li>
+                                    <Link to="/config-redmine" class="nav-link text-white rounded">
+                                        Redmine Config
+                                    </Link>
+                                </li>
                             </ul>
                         </div>
                     </li>
