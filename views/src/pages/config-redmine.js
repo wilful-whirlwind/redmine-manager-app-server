@@ -6,7 +6,6 @@ import {Message} from "../components/message/message";
 export class ConfigRedmine extends React.Component {
     constructor(props) {
         super(props);
-        console.log("in const");
         const redmineConfig = window.electronAPI.getRedmineTrackerList();
         console.log(redmineConfig);
         this.redmineTrackerList = redmineConfig.redmineTrackerList ?? [];

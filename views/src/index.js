@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import { Helmet } from "react-helmet"
-import {RedmineProject} from "./pages/redmine-project";
+import {CreateRedmineVersion} from "./pages/create-redmine-version";
 import {Config} from "./pages/config";
 import {SideMenu} from "./components/side-menu/side-menu";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
@@ -10,6 +10,8 @@ import {Management} from "./pages/management";
 import {Reports} from "./pages/reports";
 import {Home} from "./pages/home";
 import {ConfigRedmine} from "./pages/config-redmine";
+import {ListRedmineVersion} from "./pages/list-redmine-version";
+import {EditRedmineVersion} from "./pages/edit-redmine-version";
 
 class Square extends React.Component {
     render() {
@@ -99,6 +101,17 @@ class Head extends React.Component {
 }
 
 class Top extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.transitionToVersionDetailPage = this.transitionToVersionDetailPage.bind(this);
+    }
+    transitionToVersionDetailPage(name, value) {
+        let state = {};
+        state[name] = value;
+        this.setState(state);
+        document.getElementById("id-edit").click();
+    }
     render() {
         return (
             <div class="top container-fluid">
@@ -109,13 +122,14 @@ class Top extends React.Component {
                 <BrowserRouter>
                     <div class="row" id="content-field">
                         <div class="col-3" id="side-menu-field">
-                            <SideMenu ref={this.defaultPageRef}/>
+                            <SideMenu />
                         </div>
                         <div class="col-9" id="main-content-field">
                             <Routes>
-                                <Route path="/" element={<Home />} />
-                                <Route path="/home" element={<Home />} />
-                                <Route path="/redmine-project" element={<RedmineProject />} />
+                                <Route path="/home" element={<EditRedmineVersion />} />
+                                <Route path="/create-redmine-version" element={<CreateRedmineVersion />} />
+                                <Route path="/list-redmine-version" element={<ListRedmineVersion callback={this.transitionToVersionDetailPage}/>} />
+                                <Route path="/edit-redmine-version" element={<EditRedmineVersion id={this.state.id}/>}/>
                                 <Route path="/management" element={<Management />} />
                                 <Route path="/reports" element={<Reports />} />
                                 <Route path="/config" element={<Config />} />

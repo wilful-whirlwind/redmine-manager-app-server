@@ -1,9 +1,11 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const path = require("path");
 const redmineVersionAction = require("./action/redmineVersionAction");
 const saveConfigAction = require("./action/saveConfigAction");
 const loadConfigAction = require("./action/loadConfigAction");
 const getRedmineTrackerListAction = require("./action/getRedmineTrackerListAction");
+const getRedmineVersionListAction = require("./action/getRedmineVersionListAction");
+const getRedmineVersionInfoAction = require("./action/getRedmineVersionInfoAction");
 const saveRedmineConfigAction = require("./action/saveRedmineConfigAction")
 
 let win;
@@ -23,6 +25,17 @@ const createWindow = () => {
     fullscreen: false,
     frame: true
   })
+
+  // リンクをクリックするとWebブラウザで開く
+  const handleUrlOpen = (e, url)=>{
+    if( url.match(/^http/)){
+      e.preventDefault()
+      shell.openExternal(url)
+    }
+  }
+  win.webContents.on('will-navigate', handleUrlOpen);
+  win.webContents.setWindowOpenHandler(handleUrlOpen);
+
   // 開発ツールを有効化
   win.webContents.openDevTools();
   win.loadFile('./views/build/index.html')
@@ -56,6 +69,16 @@ ipcMain.on('dialog:loadConfig', async function(event, args) {
 ipcMain.on('dialog:getRedmineTrackerConfigList', async function(event, args) {
   console.log(args);
   await getRedmineTrackerListAction(event, args);
+});
+
+ipcMain.on('dialog:getRedmineVersionList', async function(event, args) {
+  console.log(args);
+  await getRedmineVersionListAction(event, args);
+});
+
+ipcMain.on('dialog:createRedmineInfo', async function(event, args) {
+  console.log(args);
+  await getRedmineVersionInfoAction(event, args);
 });
 
 ipcMain.on('dialog:redmineVersion', redmineVersionAction);

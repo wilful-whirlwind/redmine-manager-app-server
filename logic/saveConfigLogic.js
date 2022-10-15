@@ -24,6 +24,7 @@ module.exports = class SaveConfigLogic {
             basicAuthPassWord: "",
             redmineUri: "",
             redmineAccessToken: "",
+            gasGetUserListAPIEndPoint: "",
             gasPostScheduleAPIEndPoint: "",
             gasPostScheduleAPIAccessToken: "",
             gasPostScheduleAPIProjectFolderId: "",

@@ -9,7 +9,7 @@ export class SideMenu extends React.Component {
     render() {
         return (
             <div class="flex-shrink-0 p-3 text-white bg-dark" id="side-menu">
-                <Link to="/"
+                <Link to="home"
                    class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
                     <span class="fs-5 fw-semibold text-white">Project Management Helper</span>
                 </Link>
@@ -22,9 +22,17 @@ export class SideMenu extends React.Component {
                         <div className="collapse" id="project-collapse">
                             <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                 <li>
-                                    <Link to="/redmine-project" class="nav-link text-white rounded">
+                                    <Link to="create-redmine-version" class="nav-link text-white rounded">
                                         Create Project
                                     </Link>
+                                </li>
+                                <li>
+                                    <Link to="list-redmine-version" class="nav-link text-white rounded">
+                                        List Project
+                                    </Link>
+                                </li>
+                                <li className="invisible-list">
+                                    <Link id="id-edit" to="edit-redmine-version" class="nav-link text-white rounded"></Link>
                                 </li>
                             </ul>
                         </div>
@@ -37,7 +45,7 @@ export class SideMenu extends React.Component {
                         <div className="collapse" id="management-collapse">
                             <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                 <li>
-                                    <Link to="/management" class="nav-link text-white rounded">
+                                    <Link to="management" class="nav-link text-white rounded">
                                         Redmine Check
                                     </Link>
                                 </li>
@@ -52,7 +60,7 @@ export class SideMenu extends React.Component {
                         <div className="collapse" id="report-collapse">
                             <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                 <li>
-                                    <Link to="/reports" class="nav-link text-white rounded">
+                                    <Link to="reports" class="nav-link text-white rounded">
                                         Report Project
                                     </Link>
                                 </li>
@@ -67,12 +75,12 @@ export class SideMenu extends React.Component {
                         <div className="collapse" id="home-collapse">
                             <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                 <li>
-                                    <Link to="/config" class="nav-link text-white rounded">
+                                    <Link to="config" class="nav-link text-white rounded">
                                         Basic Config
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="/config-redmine" class="nav-link text-white rounded">
+                                    <Link to="config-redmine" class="nav-link text-white rounded">
                                         Redmine Config
                                     </Link>
                                 </li>

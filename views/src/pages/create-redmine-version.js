@@ -4,7 +4,7 @@ import {SectionLabel} from "../components/section-label/section-label";
 import {InputText} from "../components/input-text/input-text";
 import {Message} from "../components/message/message";
 
-export class RedmineProject extends React.Component {
+export class CreateRedmineVersion extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,10 +27,7 @@ export class RedmineProject extends React.Component {
         this.setState(state) ;
     }
     async send() {
-        console.log("---");
-        const res = await window.electronAPI.initializeVersion(this.state);
-        console.log("---");
-        console.log(res);
+        await window.electronAPI.initializeVersion(this.state);
     }
     render() {
         return (

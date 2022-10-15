@@ -1,5 +1,7 @@
 const RedmineApi = require("../api/redmineApi");
 const VersionInfo = require("../entity/versionInfo");
+const Store = require('electron-store')
+const store = new Store();
 
 module.exports = class RedmineLogic {
     async initializeVersionLogic(major, minor, maintenance, dueDate) {
@@ -21,27 +23,48 @@ module.exports = class RedmineLogic {
         }
     }
 
-    async generateProjectTicket(major, minor, maintenance) {
-        let versionInfo = new VersionInfo(major, minor, maintenance, null);
+    async getVersionList() {
         try {
-            const ticketList = await RedmineApi.getTicketsByVersion(1, versionInfo);
-            if (ticketList.length < 1) {
-                return;
+            const versionList = await RedmineApi.getVersionList(1);
+            const redmineUri = store.get("redmineUri");
+            for (let i = 0; i < versionList.length; i++) {
+                versionList[i].url = redmineUri + "/versions/" + versionList[i].id;
             }
-            for (let i = 0; i < ticketList.length; i++) {
-                if (!ticketList[i].hasOwnProperty("tracker")) {
-                    console.error("異常なチケットを検知しました。");
-                    continue;
-                }
-                switch (ticketList[i].tracker.id) {
-                    case Issue.TRACKER_ID_FEATURE:
-                        break;
-                    default:
-                }
-            }
+            return versionList;
         } catch (e) {
             console.log(e)
-            throw new Error("対象バージョンのチケット取得に失敗しました。");
+            throw new Error("バージョンの取得に失敗しました。");
+        }
+    }
+
+    async getVersion(id) {
+        try {
+            return await RedmineApi.getVersion(id);
+        } catch (e) {
+            console.log(e)
+            throw new Error("バージョンの取得に失敗しました。");
+        }
+    }
+
+    async getTicketByVersion(id) {
+        try {
+            return await RedmineApi.getTicketsByVersion(1, id);
+        } catch (e) {
+            console.log(e)
+            throw new Error("バージョンの取得に失敗しました。");
+        }
+    }
+
+    async getTicketRelationByVersion(redmineTicketList) {
+        try {
+            let result = [];
+            for (let i = 0; i < redmineTicketList.length; i++) {
+                result.push(await RedmineApi.getTicketRelations(redmineTicketList[i].id));
+            }
+            return result;
+        } catch (e) {
+            console.log(e)
+            throw new Error("バージョンの取得に失敗しました。");
         }
     }
 }

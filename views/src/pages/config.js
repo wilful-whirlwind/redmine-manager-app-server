@@ -13,6 +13,7 @@ export class Config extends React.Component {
             basicAuthPassWord: "",
             redmineUri: "",
             redmineAccessToken: "",
+            gasGetUserListAPIEndPoint: "",
             gasPostScheduleAPIEndPoint: "",
             gasPostScheduleAPIAccessToken: "",
             gasPostScheduleAPIProjectFolderId: "",
@@ -91,6 +92,14 @@ export class Config extends React.Component {
                 <SectionLabel label="GAS連携設定" />
                 <table className="table mgr-tbl">
                     <tbody>
+                    <tr>
+                        <th>
+                            GASユーザ情報取得API<br />エンドポイントURL
+                        </th>
+                        <td>
+                            <InputText id="gasGetUserListAPIEndPoint" callback={this.getInputTextValue} value={this.state.gasGetUserListAPIEndPoint} />
+                        </td>
+                    </tr>
                     <tr>
                         <th>
                             GASスケジュール登録API<br />エンドポイントURL

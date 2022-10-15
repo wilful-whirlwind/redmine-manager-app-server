@@ -32,9 +32,9 @@ module.exports = class AbstractApi {
         try {
             response = await axios.get(uri, {params: query, headers: headers});
             console.log(response);
+            return response.data;
         } catch (e) {
             console.log(e)
         }
-        return response;
     }
 }
