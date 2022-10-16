@@ -27,7 +27,9 @@ export class EditRedmineVersion extends React.Component {
         const state = this.state;
         state.versionTicketInfo = result.versionInfo;
         this.setState(state);
-        this.showModal(result.message);
+        if (result.status === "failed") {
+            this.showModal(result.message);
+        }
     }
     showModal(message) {
         this.childRef.current.bindValue(
