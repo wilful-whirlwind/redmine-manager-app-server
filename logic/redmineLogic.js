@@ -53,7 +53,7 @@ module.exports = class RedmineLogic {
             switch (rule) {
                 case 1: // feedbackbugを除く
                     for (let i = 0; i < res.length; i++) {
-                        if (res[i].subject.indexOf("feedbackbug")) {
+                        if (res[i].subject.indexOf("feedbackbug") > -1) {
                             continue;
                         }
                         result.push(res[i]);
