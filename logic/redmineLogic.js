@@ -46,9 +46,23 @@ module.exports = class RedmineLogic {
         }
     }
 
-    async getTicketByVersion(id) {
+    async getTicketByVersion(id, rule) {
         try {
-            return await RedmineApi.getTicketsByVersion(1, id);
+            const res = await RedmineApi.getTicketsByVersion(1, id);
+            let result = [];
+            switch (rule) {
+                case 1: // feedbackbugを除く
+                    for (let i = 0; i < res.length; i++) {
+                        if (res[i].subject.indexOf("feedbackbug")) {
+                            continue;
+                        }
+                        result.push(res[i]);
+                    }
+                    break;
+                default:
+                    result = res;
+            }
+            return result;
         } catch (e) {
             console.log(e)
             throw new Error("バージョンの取得に失敗しました。");

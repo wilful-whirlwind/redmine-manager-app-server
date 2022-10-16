@@ -11,7 +11,7 @@ module.exports = async function(event, versionId) {
     const gasLogic = new GasLogic();
     try {
         const redmineVersion = await redmineLogic.getVersion(versionId);
-        const redmineTicketList = await redmineLogic.getTicketByVersion(versionId);
+        const redmineTicketList = await redmineLogic.getTicketByVersion(versionId, 1);
         const redmineTicketRelationList = await redmineLogic.getTicketRelationByVersion(redmineTicketList);
         const trackerIdList = store.get("tracker_id") ?? [];
         const trackerManHoursDivisionList = store.get("man-hours_division") ?? [];
