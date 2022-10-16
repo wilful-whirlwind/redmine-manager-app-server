@@ -1,4 +1,6 @@
 const axios = require('axios');
+const Store = require('electron-store')
+const store = new Store();
 
 module.exports = class AbstractApi {
 
@@ -11,6 +13,7 @@ module.exports = class AbstractApi {
      */
     static async callPostApi(uri, headers, request) {
         let response = null;
+        headers = this.setBasicAuth(headers);
         try {
             response = await axios.post(uri, request, {headers: headers});
         } catch (e) {
@@ -29,6 +32,7 @@ module.exports = class AbstractApi {
      */
     static async callGetApi(uri, headers, query) {
         let response = null;
+        headers = this.setBasicAuth(headers);
         try {
             response = await axios.get(uri, {params: query, headers: headers});
             console.log(response);
@@ -36,5 +40,17 @@ module.exports = class AbstractApi {
         } catch (e) {
             console.log(e)
         }
+    }
+
+    static setBasicAuth(headers) {
+        const basicAuthUserId = store.get("basicAuthUserId") ?? "";
+        const basicAuthPassWord = store.get("basicAuthPassWord") ?? "";
+        if (basicAuthUserId.length > 0 && basicAuthPassWord.length > 0) {
+            if (typeof headers === "undefined" || headers === null) {
+                headers = {}
+            }
+            headers.Authorization = 'Basic ' + new Buffer(basicAuthUserId + ':' + basicAuthPassWord).toString('base64');
+        }
+        return headers;
     }
 }
