@@ -182,7 +182,12 @@ module.exports = class VersionLogic {
         const resultList = [];
         for (let i = 0; i < redmineTicketList.length; i++) {
             if (typeof redmineTicketList[i]?.category === "undefined") {
-                throw new Error("カテゴリが未設定のチケットがあります。");
+               //TODO:ポリシ設定によって、エラーにする
+               //throw new Error("カテゴリが未設定のチケットがあります。");
+                redmineTicketList[i].category = {
+                    id: 0,
+                    name: "共通"
+                };
             }
             if (typeof resultList[redmineTicketList[i].category.id] === "undefined") {
                 resultList[redmineTicketList[i].category.id] = {};
