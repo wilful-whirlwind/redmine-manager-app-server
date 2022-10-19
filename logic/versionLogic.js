@@ -76,7 +76,11 @@ module.exports = class VersionLogic {
                 };
             }
             if (typeof redmineTicketList[i]?.assigned_to === "undefined") {
-                throw new Error("担当未割り当てのチケットがあります。");
+                // throw new Error("担当未割り当てのチケットがあります。");
+                redmineTicketList[i].assigned_to = {
+                    id: 0,
+                    name: "共通"
+                };
             }
             if (typeof result[currentRedmineCategoryId].manHoursList[redmineTicketList[i].tracker.id].manHoursList[redmineTicketList[i].assigned_to.id] === "undefined") {
                 result[currentRedmineCategoryId].manHoursList[redmineTicketList[i].tracker.id].manHoursList[redmineTicketList[i].assigned_to.id] = {
