@@ -22,10 +22,21 @@ module.exports = class VersionLogic {
         let resultStr = "* テスト";
         result["total"] = [];
         for (let i = 0; i < testTicketList.length; i++) {
-            if (typeof testTicketList[i]?.developmentIssues === "undefined" || testTicketList[i].developmentIssues.length < 1) {
-                continue;
+            if (typeof result["total"][testTicketList[i].category.name] === "undefined") {
+                result["total"][testTicketList[i].category.name] = 0.0;
             }
+
+            if (typeof testTicketList[i]?.developmentIssues === "undefined" || testTicketList[i].developmentIssues.length < 1) {
+                // 共通のテスト工数
+                result["total"][testTicketList[i].category.name] += testTicketList[i].estimated_hours;
+            }
+
             for (let j = 0; j < testTicketList[i].developmentIssues.length; j++) {
+                if (j > 0) {
+                    // ブロック先の一番最初にヒットしたtrackerに割り振る。
+                    // TODO: 振り分け方式(按分 or 最初にヒット)
+                    break;
+                }
                 if (testTicketList[i].developmentIssues[j].tracker.name === "バグ") {
                     continue;
                 }
@@ -35,9 +46,6 @@ module.exports = class VersionLogic {
                 if (typeof result[testTicketList[i].developmentIssues[j].tracker.name][testTicketList[i].category.name] === "undefined") {
                     result[testTicketList[i].developmentIssues[j].tracker.name][testTicketList[i].category.name] = 0.0;
                 }
-                if (typeof result["total"][testTicketList[i].category.name] === "undefined") {
-                    result["total"][testTicketList[i].category.name] = 0.0;
-                }
                 result["total"][testTicketList[i].category.name] += testTicketList[i].estimated_hours;
                 result[testTicketList[i].developmentIssues[j].tracker.name][testTicketList[i].category.name] += testTicketList[i].estimated_hours;
             }
@@ -45,7 +53,11 @@ module.exports = class VersionLogic {
         let tmpStr = "";
         let tmpArray = [];
         for (const tracker in result) {
-            tmpStr = preString + tracker + separator2;
+            if (tracker === "total") {
+                tmpStr = separator2;
+            } else {
+                tmpStr = preString + tracker + separator2;
+            }
             tmpArray = [];
             for (const category in result[tracker]) {
                 tmpArray.push(category + result[tracker][category] + unit);
@@ -68,6 +80,9 @@ module.exports = class VersionLogic {
                     sortedRedmineTicketRelationList[redmineTicketRelationList[i][j].issue_to_id] = [];
                 }
                 if (typeof sortedRedmineTicketList[redmineTicketRelationList[i][j].issue_id] === "undefined") {
+                    continue;
+                }
+                if (redmineTicketRelationList[i][j].relation_type !== "blocks") {
                     continue;
                 }
                 sortedRedmineTicketRelationList[redmineTicketRelationList[i][j].issue_to_id].push({
