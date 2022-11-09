@@ -14,7 +14,7 @@ module.exports = class VersionLogic {
     createMonHoursList(redmineTicketList, redmineTicketRelationList, userList, trackerManHoursDivisionList) {
         let result = [];
         let convertedUserList = [];
-        let currentRedmineCategoryId = 0;
+        let currentRedmineTrackerId = 0;
         for (let i = 0; i < userList.length; i++) {
             if (typeof userList[i]?.redmine_user_id === "undefined") {
                 throw new Error("ユーザのredmine情報が不正です。");
@@ -56,21 +56,21 @@ module.exports = class VersionLogic {
             ) {
                 continue;
             }
-            currentRedmineCategoryId = 0;
+            currentRedmineTrackerId = 0;
             if (typeof redmineTicketList[i]?.category !== "undefined") {
-                currentRedmineCategoryId = redmineTicketList[i].category.id;
+                currentRedmineTrackerId = redmineTicketList[i].tracker.id;
             }
-            if (typeof result[currentRedmineCategoryId] === "undefined") {
-                result[currentRedmineCategoryId] = {};
-                result[currentRedmineCategoryId].issues = [];
-                result[currentRedmineCategoryId].manHoursList = [];
-                result[currentRedmineCategoryId].categoryName = redmineTicketList[i].category.name;
-                result[currentRedmineCategoryId].totalManHour = 0.0;
-                result[currentRedmineCategoryId].totalManHourList = [];
+            if (typeof result[currentRedmineTrackerId] === "undefined") {
+                result[currentRedmineTrackerId] = {};
+                result[currentRedmineTrackerId].issues = [];
+                result[currentRedmineTrackerId].manHoursList = [];
+                result[currentRedmineTrackerId].trackerName = redmineTicketList[i].tracker.name;
+                result[currentRedmineTrackerId].totalManHour = 0.0;
+                result[currentRedmineTrackerId].totalManHourList = [];
             }
-            if (typeof result[currentRedmineCategoryId].manHoursList[redmineTicketList[i].tracker.id] === "undefined") {
-                result[currentRedmineCategoryId].manHoursList[redmineTicketList[i].tracker.id] = {
-                    trackerName: redmineTicketList[i].tracker.name,
+            if (typeof result[currentRedmineTrackerId].manHoursList[redmineTicketList[i].category.id] === "undefined") {
+                result[currentRedmineTrackerId].manHoursList[redmineTicketList[i].category.id] = {
+                    categoryName: redmineTicketList[i].category.name,
                     manHoursList: [],
                     totalManHour: 0.0
                 };
@@ -82,8 +82,8 @@ module.exports = class VersionLogic {
                     name: "共通"
                 };
             }
-            if (typeof result[currentRedmineCategoryId].manHoursList[redmineTicketList[i].tracker.id].manHoursList[redmineTicketList[i].assigned_to.id] === "undefined") {
-                result[currentRedmineCategoryId].manHoursList[redmineTicketList[i].tracker.id].manHoursList[redmineTicketList[i].assigned_to.id] = {
+            if (typeof result[currentRedmineTrackerId].manHoursList[redmineTicketList[i].category.id].manHoursList[redmineTicketList[i].assigned_to.id] === "undefined") {
+                result[currentRedmineTrackerId].manHoursList[redmineTicketList[i].category.id].manHoursList[redmineTicketList[i].assigned_to.id] = {
                     user: convertedUserList[redmineTicketList[i].assigned_to.id],
                     totalManHour: 0.0
                 };
@@ -95,87 +95,130 @@ module.exports = class VersionLogic {
                 ) &&
                 !uniqueIgnoreIdList.includes(redmineTicketList[i].id)
             ) {
-                throw new Error("工数が未入力のチケットがあります。");
+                redmineTicketList[i].estimated_hours = 5.0;
+                // throw new Error("工数が未入力のチケットがあります。");
             }
-            result[currentRedmineCategoryId].totalManHour += redmineTicketList[i].estimated_hours;
-            if (typeof result[currentRedmineCategoryId].totalManHourList[redmineTicketList[i].assigned_to.id] === "undefined") {
-                result[currentRedmineCategoryId].totalManHourList[redmineTicketList[i].assigned_to.id] = {
+            result[currentRedmineTrackerId].totalManHour += redmineTicketList[i].estimated_hours;
+            if (typeof result[currentRedmineTrackerId].totalManHourList[redmineTicketList[i].assigned_to.id] === "undefined") {
+                result[currentRedmineTrackerId].totalManHourList[redmineTicketList[i].assigned_to.id] = {
                     name: redmineTicketList[i].assigned_to.name,
                     manHour: 0.0
                 };
             }
-            result[currentRedmineCategoryId].totalManHourList[redmineTicketList[i].assigned_to.id].manHour += redmineTicketList[i].estimated_hours;
-            result[currentRedmineCategoryId].manHoursList[redmineTicketList[i].tracker.id].totalManHour += redmineTicketList[i].estimated_hours;
-            result[currentRedmineCategoryId].manHoursList[redmineTicketList[i].tracker.id].manHoursList[redmineTicketList[i].assigned_to.id].totalManHour += redmineTicketList[i].estimated_hours;
-            result[currentRedmineCategoryId].issues.push(redmineTicketList[i]);
+            result[currentRedmineTrackerId].totalManHourList[redmineTicketList[i].assigned_to.id].manHour += redmineTicketList[i].estimated_hours;
+            result[currentRedmineTrackerId].manHoursList[redmineTicketList[i].category.id].totalManHour += redmineTicketList[i].estimated_hours;
+            result[currentRedmineTrackerId].manHoursList[redmineTicketList[i].category.id].manHoursList[redmineTicketList[i].assigned_to.id].totalManHour += redmineTicketList[i].estimated_hours;
+            result[currentRedmineTrackerId].issues.push(redmineTicketList[i]);
         }
         return result;
     }
 
     createFormattedManHourList(totalManHourList) {
         let eachResult = [];
-        let tmpArrayForTotal = [];
-        let tmpArrayForTotalEachUsers = [];
-        let tmpArrayForEachTracker = [];
-        let tmpArrayForEachUsersOfTracker = [];
+        let tmpArray = [];
+        let tmpArrayByUser = [];
+        let tmpArrayByUserForJoin = [];
         const unit = "h";
         const separator = "、";
-        // 一行目: 合計
-        for (let i = 0; i < totalManHourList.length; i++) {
-            if (typeof totalManHourList[i] === "undefined") {
+        const preString = " * ";
+        const separator2 = "：";
+        eachResult[0] = this.createFormattedManHourListTotal(totalManHourList, unit, separator);
+        for (let currentTrackerId = 1; currentTrackerId < totalManHourList.length; currentTrackerId++) {
+            if (typeof totalManHourList[currentTrackerId] === "undefined") {
                 continue;
             }
-            tmpArrayForTotal.push(totalManHourList[i].categoryName + totalManHourList[i].totalManHour + unit);
-            for (let j = 0; j < totalManHourList[i].totalManHourList.length; j++) {
-                if (typeof totalManHourList[i].totalManHourList[j] === "undefined") {
+            eachResult[currentTrackerId] = preString + totalManHourList[currentTrackerId].trackerName + separator2;
+            for (let currentCategoryId = 0; currentCategoryId < totalManHourList[currentTrackerId].manHoursList.length; currentCategoryId++) {
+                if (typeof totalManHourList[currentTrackerId].manHoursList[currentCategoryId] === "undefined") {
                     continue;
                 }
-                tmpArrayForTotalEachUsers.push(totalManHourList[i].totalManHourList[j].name + totalManHourList[i].totalManHourList[j].manHour + unit);
-            }
-        }
-        eachResult[0] = "* " + tmpArrayForTotal.join(separator);
-        eachResult[0] += "(" + tmpArrayForTotalEachUsers.join(separator) + ")";
-        let firstLoopFlag = true;
-        let tmpArray = [];
-        // 二行目以降
-        for (let i = 0; i < totalManHourList.length; i++) {
-            if (typeof totalManHourList[i] === "undefined") {
-                continue;
-            }
-            for (let j = 0; j < totalManHourList[i].manHoursList.length; j++) {
-                if (typeof totalManHourList[i].manHoursList[j] === "undefined") {
-                    continue;
-                }
-                if (firstLoopFlag) {
-                    eachResult[j + 1] = "    * " + totalManHourList[i].manHoursList[j].trackerName + "：" ;
-                }
-                tmpArrayForEachTracker.push(totalManHourList[i].categoryName + ":" + totalManHourList[i].manHoursList[j].totalManHour + unit);
-                for (let k = 0; k < totalManHourList[i].manHoursList[j].manHoursList.length; k++) {
-                    if (typeof totalManHourList[i].manHoursList[j].manHoursList[k] === "undefined") {
+                tmpArray.push(
+                    totalManHourList[currentTrackerId].manHoursList[currentCategoryId].categoryName +
+                    totalManHourList[currentTrackerId].manHoursList[currentCategoryId].totalManHour + unit
+                );
+                for (let currentUserId = 0; currentUserId < totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList.length; currentUserId++) {
+                    if (typeof totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId] === "undefined") {
                         continue;
                     }
-                    tmpArrayForEachUsersOfTracker.push(totalManHourList[i].manHoursList[j].manHoursList[k].user.name + totalManHourList[i].manHoursList[j].manHoursList[k].totalManHour + unit);
-                }
-                tmpArray.push(tmpArrayForEachTracker.join(separator)  + "(" + tmpArrayForEachUsersOfTracker.join(separator) + ")");
-                tmpArrayForEachTracker = [];
-                tmpArrayForEachUsersOfTracker = [];
-            }
-            firstLoopFlag = false;
-        }
 
-        let skipCount = 1;
-        for(let i = 0; i < tmpArray.length; i++) {
-            if (typeof eachResult[i + skipCount] === "undefined") {
-                skipCount++;
-                i--;
+                    if (typeof tmpArrayByUser[totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId].user.name] === "undefined") {
+                        tmpArrayByUser[totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId].user.name] = 0.0;
+                    }
+                    tmpArrayByUser[totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId].user.name] += totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId].totalManHour;
+                }
+            }
+            for (const userName in tmpArrayByUser) {
+                tmpArrayByUserForJoin.push(userName+tmpArrayByUser[userName]+unit);
+            }
+            tmpArrayByUser = [];
+            eachResult[currentTrackerId] += tmpArray.join(separator) + "(" + tmpArrayByUserForJoin.join(separator) + ")";
+            tmpArrayByUserForJoin = [];
+            tmpArray = [];
+        }
+        let result = "## 工数\n\n";
+        for (let i = 0; i <eachResult.length; i++) {
+            if (typeof eachResult[i] === "undefined") {
                 continue;
             }
-            eachResult[i + skipCount] += tmpArray[i];
+            result += eachResult[i] + "\n";
+        }
+        return result.replace(/(\n)+/g,'\n');
+    }
+
+    createFormattedManHourListTotal(totalManHourList, unit, separator) {
+        let eachResult = "";
+        let tmpArrayForTotal = [];
+        let tmpArrayForTotalJoin = [];
+        let tmpArrayForTotalEachUsers = [];
+        let tmpArrayForTotalEachUsersForJoin = [];
+        // 一行目: 合計
+        for (let currentTrackerId = 0; currentTrackerId < totalManHourList.length; currentTrackerId++) {
+            if (typeof totalManHourList[currentTrackerId] === "undefined") {
+                continue;
+            }
+            for (let currentCategoryId = 0; currentCategoryId < totalManHourList[currentTrackerId].manHoursList.length; currentCategoryId++) {
+                if (typeof totalManHourList[currentTrackerId].manHoursList[currentCategoryId] === "undefined") {
+                    continue;
+                }
+                if (typeof tmpArrayForTotal[totalManHourList[currentTrackerId].manHoursList[currentCategoryId].categoryName] === "undefined") {
+                    tmpArrayForTotal[totalManHourList[currentTrackerId].manHoursList[currentCategoryId].categoryName] = 0.0;
+                }
+                tmpArrayForTotal[totalManHourList[currentTrackerId].manHoursList[currentCategoryId].categoryName] += totalManHourList[currentTrackerId].manHoursList[currentCategoryId].totalManHour;
+                for (let currentUserId = 0; currentUserId < totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList.length; currentUserId++) {
+                    if (typeof totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId] === "undefined") {
+                        continue;
+                    }
+                    if (typeof totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId].user === "undefined") {
+                        totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId].user = {
+                            id: -1,
+                            name: currentUserId+"(redmine)",
+                            redmine_user_id: currentUserId,
+                            timecard_user_id: null,
+                            mail_address: "",
+                            password_hashed: ""
+                        };
+                    }
+                    if (typeof tmpArrayForTotalEachUsers[totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId].user.name] === "undefined") {
+                        tmpArrayForTotalEachUsers[totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId].user.name] = 0.0;
+                    }
+                    tmpArrayForTotalEachUsers[totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId].user.name] += totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId].totalManHour;
+                }
+            }
         }
 
-        let result = "## 工数\n\n";
-        result += eachResult.join("\n");
-        return result.replace(/(\n)+/g,'\n');
+        eachResult = "* 開発：";
+        for (const tmpTotal in tmpArrayForTotal) {
+            tmpArrayForTotalJoin.push(tmpTotal+tmpArrayForTotal[tmpTotal]+unit);
+        }
+
+        for (const tmpUserTotal in tmpArrayForTotalEachUsers) {
+            tmpArrayForTotalEachUsersForJoin.push(tmpUserTotal+tmpArrayForTotalEachUsers[tmpUserTotal]+unit);
+        }
+
+        eachResult += tmpArrayForTotalJoin.join(separator) + "(";
+        eachResult += tmpArrayForTotalEachUsersForJoin.join(separator) + ")";
+
+        return eachResult;
     }
 
     createTicketListEachTracker(redmineTicketList, trackerIdList) {
@@ -186,8 +229,8 @@ module.exports = class VersionLogic {
         const resultList = [];
         for (let i = 0; i < redmineTicketList.length; i++) {
             if (typeof redmineTicketList[i]?.category === "undefined") {
-               //TODO:ポリシ設定によって、エラーにする
-               //throw new Error("カテゴリが未設定のチケットがあります。");
+                //TODO:ポリシ設定によって、エラーにする
+                //throw new Error("カテゴリが未設定のチケットがあります。");
                 redmineTicketList[i].category = {
                     id: 0,
                     name: "共通"
@@ -229,13 +272,10 @@ module.exports = class VersionLogic {
                 }
                 resultString += "- " + redmineTicketList[i].trackerList[j].trackerName + "\n";
                 for (let k = 0; k < redmineTicketList[i].trackerList[j].ticketList.length; k++) {
-                    resultString += "     - ##" + redmineTicketList[i].trackerList[j].ticketList[k].id + "\n";
+                    resultString += " - ##" + redmineTicketList[i].trackerList[j].ticketList[k].id + "\n";
                 }
             }
         }
-
         return resultString;
     }
-
-
 }

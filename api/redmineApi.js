@@ -30,15 +30,23 @@ module.exports = class RedmineApi extends AbstractApi {
      *
      * @param projectId
      * @param versionId
+     * @param offset
      * @return {Promise<array>}
      */
-    static async getTicketsByVersion(projectId, versionId) {
+    static async getTicketsByVersion(projectId, versionId, offset= 0) {
         const redmineUrl = store.get("redmineUri");
-        const result = await this.callGetApi(redmineUrl + "/projects/" + projectId + "/issues.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineGetTicketRequestQuery(versionId));
-        if (!result.hasOwnProperty("issues")) {
+        let response = await this.callGetApi(redmineUrl + "/projects/" + projectId + "/issues.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineGetTicketRequestQuery(versionId, offset));
+        let tmpResult = {};
+        if (!response.hasOwnProperty("issues")) {
             throw new Error("チケット情報の取得に失敗しました。")
         }
-        return result.issues;
+        let result = response.issues;
+        if (response.total_count > (offset + 1) * 100) {
+            offset++;
+            tmpResult = await this.getTicketsByVersion(projectId, versionId, offset);
+            result = result.concat(tmpResult);
+        }
+        return result;
     }
 
     /**
@@ -76,11 +84,12 @@ module.exports = class RedmineApi extends AbstractApi {
         }
     }
 
-    static #createRedmineGetTicketRequestQuery(fixedVersionId) {
+    static #createRedmineGetTicketRequestQuery(fixedVersionId, offset) {
         return {
             "fixed_version_id": fixedVersionId,
             "status_id": "*",
-            "limit": 100
+            "limit": 100,
+            "offset": offset * 100
         }
     }
 
