@@ -6,9 +6,91 @@ module.exports = class VersionLogic {
         let resultFormattedVersionInfo = "";
         const ticketListEachTracker = this.createTicketListEachTracker(redmineTicketList, trackerIdList);
         const manHourList = this.createMonHoursList(redmineTicketList, redmineTicketRelationList, userList, trackerManHoursDivisionList);
+        const testTicketList = this.createTestTicketList(redmineTicketList, redmineTicketRelationList, userList, trackerManHoursDivisionList);
         resultFormattedVersionInfo += this.createFormattedTicketList(ticketListEachTracker, trackerManHoursDivisionList);
-        resultFormattedVersionInfo += "\n" + this.createFormattedManHourList(manHourList);
+        const unit = "h";
+        const separator = "、";
+        const preString = " * ";
+        const separator2 = "：";
+        resultFormattedVersionInfo += "\n" + this.createFormattedDevelopmentManHourList(manHourList, unit, separator, preString, separator2);
+        resultFormattedVersionInfo += "\n" + this.createFormattedTestManHourList(testTicketList, unit, separator, preString, separator2);
         return resultFormattedVersionInfo;
+    }
+
+    createFormattedTestManHourList(testTicketList, unit, separator, preString, separator2) {
+        let result = [];
+        let resultStr = "* テスト";
+        result["total"] = [];
+        for (let i = 0; i < testTicketList.length; i++) {
+            if (typeof testTicketList[i]?.developmentIssues === "undefined" || testTicketList[i].developmentIssues.length < 1) {
+                continue;
+            }
+            for (let j = 0; j < testTicketList[i].developmentIssues.length; j++) {
+                if (testTicketList[i].developmentIssues[j].tracker.name === "バグ") {
+                    continue;
+                }
+                if (typeof result[testTicketList[i].developmentIssues[j].tracker.name] === "undefined") {
+                    result[testTicketList[i].developmentIssues[j].tracker.name] = [];
+                }
+                if (typeof result[testTicketList[i].developmentIssues[j].tracker.name][testTicketList[i].category.name] === "undefined") {
+                    result[testTicketList[i].developmentIssues[j].tracker.name][testTicketList[i].category.name] = 0.0;
+                }
+                if (typeof result["total"][testTicketList[i].category.name] === "undefined") {
+                    result["total"][testTicketList[i].category.name] = 0.0;
+                }
+                result["total"][testTicketList[i].category.name] += testTicketList[i].estimated_hours;
+                result[testTicketList[i].developmentIssues[j].tracker.name][testTicketList[i].category.name] += testTicketList[i].estimated_hours;
+            }
+        }
+        let tmpStr = "";
+        let tmpArray = [];
+        for (const tracker in result) {
+            tmpStr = preString + tracker + separator2;
+            tmpArray = [];
+            for (const category in result[tracker]) {
+                tmpArray.push(category + result[tracker][category] + unit);
+            }
+            resultStr += tmpStr + tmpArray.join(separator) + "\n";
+        }
+        return resultStr;
+    }
+
+    createTestTicketList(redmineTicketList, redmineTicketRelationList, userList, trackerManHoursDivisionList) {
+        let sortedRedmineTicketList = [];
+        for (let i = 0; i < redmineTicketList.length; i++) {
+            sortedRedmineTicketList[redmineTicketList[i].id] = redmineTicketList[i];
+        }
+
+        let sortedRedmineTicketRelationList = [];
+        for (let i = 0; i < redmineTicketRelationList.length; i++) {
+            for (let j = 0; j < redmineTicketRelationList[i].length; j++) {
+                if (typeof sortedRedmineTicketRelationList[redmineTicketRelationList[i][j].issue_to_id] === "undefined") {
+                    sortedRedmineTicketRelationList[redmineTicketRelationList[i][j].issue_to_id] = [];
+                }
+                if (typeof sortedRedmineTicketList[redmineTicketRelationList[i][j].issue_id] === "undefined") {
+                    continue;
+                }
+                sortedRedmineTicketRelationList[redmineTicketRelationList[i][j].issue_to_id].push({
+                    id: redmineTicketRelationList[i][j].issue_id,
+                    tracker: sortedRedmineTicketList[redmineTicketRelationList[i][j].issue_id]?.tracker
+                });
+            }
+        }
+
+        let testTicketList = [];
+        for (let i = 0; i < redmineTicketList.length; i++) {
+            for (let currentTrackerId = 0; currentTrackerId < trackerManHoursDivisionList.length; currentTrackerId++) {
+                if (
+                    currentTrackerId === redmineTicketList[i].tracker.id &&
+                    trackerManHoursDivisionList[currentTrackerId] === "1"
+                ) {
+                    redmineTicketList[i].developmentIssues = sortedRedmineTicketRelationList[redmineTicketList[i].id] ?? [];
+                    testTicketList.push(redmineTicketList[i]);
+                    break;
+                }
+            }
+        }
+        return testTicketList;
     }
 
     createMonHoursList(redmineTicketList, redmineTicketRelationList, userList, trackerManHoursDivisionList) {
@@ -113,15 +195,11 @@ module.exports = class VersionLogic {
         return result;
     }
 
-    createFormattedManHourList(totalManHourList) {
+    createFormattedDevelopmentManHourList(totalManHourList, unit, separator, preString, separator2) {
         let eachResult = [];
         let tmpArray = [];
         let tmpArrayByUser = [];
         let tmpArrayByUserForJoin = [];
-        const unit = "h";
-        const separator = "、";
-        const preString = " * ";
-        const separator2 = "：";
         eachResult[0] = this.createFormattedManHourListTotal(totalManHourList, unit, separator);
         for (let currentTrackerId = 1; currentTrackerId < totalManHourList.length; currentTrackerId++) {
             if (typeof totalManHourList[currentTrackerId] === "undefined") {
