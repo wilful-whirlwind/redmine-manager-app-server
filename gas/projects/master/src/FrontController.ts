@@ -1,4 +1,6 @@
 import {getUserAction} from "./action/GetUserAction";
+import {getScheduleAction} from "./action/GetScheduleAction";
+import {getTicketTemplateAction} from "./action/GetTicketTemplateAction";
 
 export function frontController(params: any, httpMethod: string): any
 {
@@ -13,8 +15,10 @@ export function frontController(params: any, httpMethod: string): any
             res = getUserAction(params);
             break;
         case "schedule":
+            res = getScheduleAction(params);
             break;
-        case "templateTicket":
+        case "template_ticket":
+            res = getTicketTemplateAction(params);
             break;
         default:
     }
