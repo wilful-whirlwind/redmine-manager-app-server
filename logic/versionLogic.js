@@ -368,6 +368,7 @@ module.exports = class VersionLogic {
                     resultString += " - ##" + redmineTicketList[i].trackerList[j].ticketList[k].id + "\n";
                 }
             }
+            resultString += "\n";
         }
         return resultString;
     }
