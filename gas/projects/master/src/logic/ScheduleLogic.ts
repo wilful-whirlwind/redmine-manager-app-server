@@ -1,4 +1,5 @@
 import {getSpreadSheetId} from "../config/Config";
+import {type} from "os";
 
 export class ScheduleLogic {
 
@@ -59,5 +60,19 @@ export class ScheduleLogic {
             }
         }
         return null;
+    }
+
+    /**
+     * google calenderに予定を登録
+     * @param ymd
+     * @param title
+     * @param calendarId
+     */
+    public saveScheduleToGoogleCalendar(ymd: string, title:string, calendarId: string) {
+        const calendar = CalendarApp.getCalendarById(calendarId);
+        if (calendar === null) {
+            throw new Error("カレンダーIDが不正です。")
+        }
+        calendar.createAllDayEvent(title, new Date(ymd));
     }
 }

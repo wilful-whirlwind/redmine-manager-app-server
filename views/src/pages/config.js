@@ -15,6 +15,7 @@ export class Config extends React.Component {
             redmineAccessToken: "",
             gasGetUserListAPIEndPoint: "",
             gasPostScheduleAPIEndPoint: "",
+            gasPostScheduleAPICalenderId: "",
             gasPostScheduleAPIAccessToken: "",
             gasPostScheduleAPIProjectFolderId: "",
             gasPostScheduleAPITemplateProjectFolderId: "",
@@ -106,6 +107,14 @@ export class Config extends React.Component {
                         </th>
                         <td>
                             <InputText id="gasPostScheduleAPIEndPoint" callback={this.getInputTextValue} value={this.state.gasPostScheduleAPIEndPoint} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            GASスケジュール登録API<br />対象カレンダーID
+                        </th>
+                        <td>
+                            <InputText id="gasPostScheduleAPICalenderId" callback={this.getInputTextValue} value={this.state.gasPostScheduleAPICalenderId} />
                         </td>
                     </tr>
                     <tr>

@@ -3,7 +3,7 @@ import {frontController} from "./src/FrontController";
 export {}
 
 declare global {
-    function doPost(): any;
+    function doPost(e: any): any;
     function doGet(e: any): any;
 }
 
@@ -15,8 +15,10 @@ function createResponse(payload: string) {
     return output;
 }
 
-global.doPost = () => {
-    return createResponse(JSON.stringify({"type": "post"}));
+global.doPost = (e: any) => {
+    const body = JSON.parse(e.postData.getDataAsString());
+    const res = frontController(body, 'post');
+    return createResponse(JSON.stringify(res));
 }
 
 global.doGet = function(e: any) {
