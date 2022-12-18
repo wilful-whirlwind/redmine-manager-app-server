@@ -22,6 +22,9 @@ contextBridge.exposeInMainWorld('electronAPI',{
     getRedmineVersionList:function(data) {
         return ipcRenderer.sendSync('dialog:getRedmineVersionList', data);
     },
+    getEventList:function(data) {
+        return ipcRenderer.sendSync('dialog:getEventList', data);
+    },
     createVersionInfo:function(data) {
         return ipcRenderer.sendSync('dialog:createRedmineInfo', data);
     },

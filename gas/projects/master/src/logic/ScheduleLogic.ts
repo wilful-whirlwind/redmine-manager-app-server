@@ -21,7 +21,7 @@ export class ScheduleLogic {
 
         for (let row = 1; row < values.length; row++) {
             scheduleList.push({
-                useFlag: values[row][0],
+                use_flag: values[row][0],
                 id: values[row][1],
                 name: values[row][2],
                 all_day_flag: values[row][3],
@@ -67,12 +67,20 @@ export class ScheduleLogic {
      * @param ymd
      * @param title
      * @param calendarId
+     * @param start
+     * @param end
      */
-    public saveScheduleToGoogleCalendar(ymd: string, title:string, calendarId: string) {
+    public saveScheduleToGoogleCalendar(ymd: string, title:string, calendarId: string, start: string, end: string) {
         const calendar = CalendarApp.getCalendarById(calendarId);
         if (calendar === null) {
             throw new Error("カレンダーIDが不正です。")
         }
-        calendar.createAllDayEvent(title, new Date(ymd));
+        if (start.length < 1) {
+            calendar.createAllDayEvent(title, new Date(ymd));
+        } else {
+            const startDate = new Date(ymd + " " + start);
+            const endDate = new Date(ymd + " " + end);
+            calendar.createEvent(title, startDate, endDate);
+        }
     }
 }

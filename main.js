@@ -1,17 +1,18 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const path = require("path");
-const redmineVersionAction = require("./action/redmineVersionAction");
+const saveRedmineVersionAction = require("./action/saveRedmineVersionAction");
 const saveConfigAction = require("./action/saveConfigAction");
 const loadConfigAction = require("./action/loadConfigAction");
 const getRedmineTrackerListAction = require("./action/getRedmineTrackerListAction");
 const getRedmineVersionListAction = require("./action/getRedmineVersionListAction");
 const getRedmineVersionInfoAction = require("./action/getRedmineVersionInfoAction");
+const getEventListAction = require("./action/getEventListAction");
 const saveRedmineConfigAction = require("./action/saveRedmineConfigAction")
 
 let win;
 const createWindow = () => {
-  const width = 700;
-  const height = 600;
+  const width = 1050;
+  const height = 900;
   win = new BrowserWindow({
     width: width,
     height: height,
@@ -76,11 +77,16 @@ ipcMain.on('dialog:getRedmineVersionList', async function(event, args) {
   await getRedmineVersionListAction(event, args);
 });
 
+ipcMain.on('dialog:getEventList', async function(event, args) {
+  console.log(args);
+  await getEventListAction(event, args);
+});
+
 ipcMain.on('dialog:createRedmineInfo', async function(event, args) {
   console.log(args);
   await getRedmineVersionInfoAction(event, args);
 });
 
-ipcMain.on('dialog:redmineVersion', redmineVersionAction);
+ipcMain.on('dialog:redmineVersion', saveRedmineVersionAction);
 ipcMain.on('dialog:saveConfig', saveConfigAction);
 ipcMain.on('dialog:saveRedmineConfig', saveRedmineConfigAction);

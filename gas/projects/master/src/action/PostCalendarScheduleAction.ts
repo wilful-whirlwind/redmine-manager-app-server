@@ -11,15 +11,23 @@ export function postCalendarScheduleAction(body: any)
     } catch(e) {
         Logger.log(e);
         return {
-            "type": "error",
+            "status": "error",
             "message": "リクエストボディが不正です。"
         }
     }
     const ymd = body?.ymd;
     const title = body?.title;
     const calendarId = body?.calendar_id;
+    let start = body?.start;
+    let end = body?.end;
+    if (typeof start === "undefined") {
+        start = "";
+    }
+    if (typeof end === "undefined") {
+        end = "";
+    }
     const scheduleLogic = new ScheduleLogic();
-    scheduleLogic.saveScheduleToGoogleCalendar(ymd, title, calendarId)
+    scheduleLogic.saveScheduleToGoogleCalendar(ymd, title, calendarId, start, end)
     return {
         "status": "success",
         "message": "登録しました"

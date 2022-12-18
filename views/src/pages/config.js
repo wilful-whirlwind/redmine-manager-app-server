@@ -13,7 +13,7 @@ export class Config extends React.Component {
             basicAuthPassWord: "",
             redmineUri: "",
             redmineAccessToken: "",
-            gasGetUserListAPIEndPoint: "",
+            gasGetListAPIEndPoint: "",
             gasPostScheduleAPIEndPoint: "",
             gasPostScheduleAPICalenderId: "",
             gasPostScheduleAPIAccessToken: "",
@@ -95,10 +95,10 @@ export class Config extends React.Component {
                     <tbody>
                     <tr>
                         <th>
-                            GASユーザ情報取得API<br />エンドポイントURL
+                            GAS情報取得API<br />エンドポイントURL
                         </th>
                         <td>
-                            <InputText id="gasGetUserListAPIEndPoint" callback={this.getInputTextValue} value={this.state.gasGetUserListAPIEndPoint} />
+                            <InputText id="gasGetListAPIEndPoint" callback={this.getInputTextValue} value={this.state.gasGetListAPIEndPoint} />
                         </td>
                     </tr>
                     <tr>
