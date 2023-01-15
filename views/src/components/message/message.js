@@ -11,16 +11,11 @@ export class Message extends React.Component {
         this.state.className = "modal_overlay2";
         this.bindValue = this.bindValue.bind(this);
         this.toggleVisible = this.toggleVisible.bind(this);
-        console.log("in const");
     }
 
     bindValue(props) {
-        console.log(this.props);
-        console.log(this.state);
-        console.log(props);
         this.state = props;
         this.setState(props);
-        console.log("in bind");
     }
     toggleVisible() {
         this.setState({
@@ -29,7 +24,6 @@ export class Message extends React.Component {
     }
 
     render() {
-        console.log("in render");
         return (
             <>
                 {
@@ -40,7 +34,6 @@ export class Message extends React.Component {
                                 <label htmlFor="trigger" className="modal_trigger"></label>
                                 <div className="modal_content">
                                     <label htmlFor="trigger" className="close_button" onClick={this.toggleVisible}>✖️</label>
-                                    <p className="modal_title2">モーダル の中身を表示</p>
                                     <p>{this.state.message}</p>
                                 </div>
                             </div>

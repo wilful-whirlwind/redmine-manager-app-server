@@ -30,6 +30,7 @@ export class CreateRedmineVersion extends React.Component {
         this.renderEventDateRangeForm = this.renderEventDateRangeForm.bind(this);
         this.setEventDateTime = this.setEventDateTime.bind(this);
         this.getCurrentEventListFromCalender = this.getCurrentEventListFromCalender.bind(this);
+        this.childRef = React.createRef();
         this.eventList = React.createRef();
         const eventListInfo = window.electronAPI.getEventList(this.state);
         this.dateTimeList = [];
@@ -58,8 +59,18 @@ export class CreateRedmineVersion extends React.Component {
     async send() {
         let state = this.state;
         this.setState(state);
-        await window.electronAPI.initializeVersion(this.state);
-        
+        const res = await window.electronAPI.initializeVersion(this.state);
+        this.showModal(res);
+    }
+
+    showModal(message) {
+        this.childRef.current.bindValue(
+            {
+                message: message,
+                visible: true,
+                className: "modal_overlay"
+            }
+        );
     }
 
     /**
@@ -109,7 +120,7 @@ export class CreateRedmineVersion extends React.Component {
                 if (e.getUTCMonth() < 9) {
                     zeroFillMonth = "0";
                 }
-                if (e.getUTCDay() < 10) {
+                if (e.getUTCDate() < 10) {
                     zeroFillDay = "0";
                 }
                 if (e.getUTCHours() < 10) {
@@ -124,8 +135,13 @@ export class CreateRedmineVersion extends React.Component {
                 inputTime = zeroFillHours + e.getUTCHours() + ":" + zeroFillMinutes + e.getUTCMinutes() + ":" + zeroFillSeconds + e.getUTCSeconds();
                 inputDate = e.getUTCFullYear() + "-" + zeroFillMonth + (e.getUTCMonth() + 1) + "-" + zeroFillDay + e.getUTCDate();
             } else {
-                inputTime = e.format('HH:mm:ss');
-                inputDate = e.format('YYYY-MM-DD');
+                try {
+                    inputTime = e.format('HH:mm:ss');
+                    inputDate = e.format('YYYY-MM-DD');
+                } catch (e) {
+                    // formatに失敗した時は何もしない。
+                    return;
+                }
             }
             console.log(inputDate);
             console.log(inputTime);
@@ -342,7 +358,7 @@ export class CreateRedmineVersion extends React.Component {
                 <SectionLabel label="Meeting" />
                 {this.renderEventTable()}
                 <button class="btn btn-outline-primary" disabled={!this.state.versionIsChecked} onClick={() => this.send()}>バージョン生成</button>
-                <Message message="登録しました。" id="fine"></Message>
+                <Message ref={this.childRef} message={""} id="fine" visible={false}></Message>
             </div>
         );
     }
