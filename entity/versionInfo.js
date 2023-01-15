@@ -1,6 +1,5 @@
 /**
  * バージョン
- * @type {VersionInfo}
  */
 module.exports = class VersionInfo {
     /**
@@ -24,7 +23,7 @@ module.exports = class VersionInfo {
      * @param suffix
      * @return string 生成されたバージョン名
      */
-    getVersionName(prefix = "", separator = "", suffix = "") {
+    getVersionName(prefix = "ver.", separator = ".", suffix = "_POSサーバー") {
         const joinedVersion = [this.major, this.minor, this.maintenance].join(separator);
         return prefix + joinedVersion + suffix;
     }

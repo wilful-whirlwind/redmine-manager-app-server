@@ -96,7 +96,7 @@ module.exports = class RedmineApi extends AbstractApi {
     static #createRedmineVersionRequest(versionInfo) {
         return {
             "version": {
-                "name": versionInfo.getVersionName("ver.", ".", "_POSサーバー"),
+                "name": versionInfo.getVersionName(),
                 "description": "",
                 "status": "open",
                 "due_date": versionInfo.dueDate,

@@ -83,4 +83,71 @@ export class ScheduleLogic {
             calendar.createEvent(title, startDate, endDate);
         }
     }
+
+    /**
+     * google calenderに予定を取得
+     * @param versionName
+     * @param calendarId
+     * @param from
+     * @param to
+     */
+    public getScheduleToGoogleCalendar(versionName:string, calendarId: string, from: string, to: string) {
+        const calendar = CalendarApp.getCalendarById(calendarId);
+        if (calendar === null) {
+            throw new Error("カレンダーIDが不正です。")
+        }
+        const events = calendar.getEvents(new Date(from), new Date(to));
+        let res = [];
+        let start: GoogleAppsScript.Base.Date;
+        let end: GoogleAppsScript.Base.Date;
+        for (let i = 0; i < events.length; i++) {
+            if (events[i].getTitle().search(versionName) > -1) {
+                start = events[i].getStartTime();
+                end = events[i].getEndTime();
+                // 日本時間に合わせる。
+                start.setHours(start.getHours() + 9);
+                end.setHours(end.getHours() + 9);
+                res.push(
+                    {
+                        "title": events[i].getTitle(),
+                        "start": start,
+                        "end": end,
+                        "all_day_event_flag": events[i].isAllDayEvent()
+                    }
+                );
+            }
+        }
+        return res;
+    }
+
+    /**
+     * google calenderに予定を取得
+     * @param versionName
+     * @param calendarId
+     * @param from
+     * @param to
+     * @param searchString
+     */
+    public deleteScheduleToGoogleCalendar(versionName:string, calendarId: string, from: string, to: string, searchString: string) {
+        const calendar = CalendarApp.getCalendarById(calendarId);
+        if (calendar === null) {
+            throw new Error("カレンダーIDが不正です。")
+        }
+        if (searchString.length < 1) {
+            throw new Error("削除検索文字列が空です。")
+        }
+        const events = calendar.getEvents(new Date(from), new Date(to));
+        let res = {
+            status: "not found",
+        };
+        let start: GoogleAppsScript.Base.Date;
+        let end: GoogleAppsScript.Base.Date;
+        for (let i = 0; i < events.length; i++) {
+            if (events[i].getTitle() === versionName + searchString) {
+                res.status = "deleted";
+                events[i].deleteEvent();
+            }
+        }
+        return res;
+    }
 }

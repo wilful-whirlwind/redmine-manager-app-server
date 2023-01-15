@@ -7,7 +7,8 @@ const getRedmineTrackerListAction = require("./action/getRedmineTrackerListActio
 const getRedmineVersionListAction = require("./action/getRedmineVersionListAction");
 const getRedmineVersionInfoAction = require("./action/getRedmineVersionInfoAction");
 const getEventListAction = require("./action/getEventListAction");
-const saveRedmineConfigAction = require("./action/saveRedmineConfigAction")
+const saveRedmineConfigAction = require("./action/saveRedmineConfigAction");
+const getCurrentEventListFromCalendarAction = require("./action/getCurrentEventListFromCalendarAction");
 
 let win;
 const createWindow = () => {
@@ -90,3 +91,8 @@ ipcMain.on('dialog:createRedmineInfo', async function(event, args) {
 ipcMain.on('dialog:redmineVersion', saveRedmineVersionAction);
 ipcMain.on('dialog:saveConfig', saveConfigAction);
 ipcMain.on('dialog:saveRedmineConfig', saveRedmineConfigAction);
+
+ipcMain.on('dialog:getCurrentEventListFromCalender', async function(event, args) {
+  console.log(args);
+  await getCurrentEventListFromCalendarAction(event, args);
+});

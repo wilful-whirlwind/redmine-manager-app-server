@@ -15,7 +15,7 @@ targets.forEach(dirName => {
     entries[dirName] = path.resolve(projectsPath, dirName, 'index.ts')
 })
 module.exports = {
-    mode: 'production',
+    mode: 'none',
     entry: entries,
     output: {
         path: path.resolve(projectsPath),

@@ -4,7 +4,7 @@ const GasLogic = require("../logic/gasLogic");
 module.exports = async function(event, data) {
     const logic = new GasLogic();
     try {
-        const eventList = await logic.getScheduleList();
+        const eventList = await logic.getScheduleListFromEventMaster();
         event.returnValue = {
             "status": "success",
             "eventList": eventList,

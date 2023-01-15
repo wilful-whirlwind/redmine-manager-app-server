@@ -2,6 +2,8 @@ import {getUserAction} from "./action/GetUserAction";
 import {getScheduleAction} from "./action/GetScheduleAction";
 import {getTicketTemplateAction} from "./action/GetTicketTemplateAction";
 import {postCalendarScheduleAction} from "./action/PostCalendarScheduleAction";
+import {getScheduleFromCalendarAction} from "./action/GetScheduleFromCalendarAction";
+import {deleteScheduleFromCalendarAction} from "./action/DeleteScheduleFromCalendarAction";
 
 export function frontController(params: any, httpMethod: string): any
 {
@@ -22,12 +24,18 @@ export function frontController(params: any, httpMethod: string): any
             case "template_ticket":
                 res = getTicketTemplateAction(params);
                 break;
+            case "calendar":
+                res = getScheduleFromCalendarAction(params);
+                break;
             default:
         }
     } else if (httpMethod === 'post') {
         switch (target) {
             case "calendar":
                 res = postCalendarScheduleAction(params);
+                break;
+            case "delete_event":
+                res = deleteScheduleFromCalendarAction(params);
                 break;
             default:
         }

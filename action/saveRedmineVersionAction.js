@@ -5,14 +5,35 @@ const {app} = require("electron");
 const store = new Store();
 
 
+function validate(data) {
+    let errList = [];
+    if (typeof data?.majorVersion === "undefined") {
+        errList.push("メジャーバージョンの値が不正です。");
+    }
+
+    if (typeof data?.minorVersion === "undefined") {
+        errList.push("マイナーバージョンの値が不正です。");
+
+    }
+
+    if (typeof data?.maintenanceVersion === "undefined") {
+        errList.push("メンテナンスバージョンの値が不正です。");
+    }
+    return errList;
+}
+
 module.exports = async function(event, data) {
     console.log(data);
+    let errList = validate(data);
+    if (errList.length > 0) {
+        event.returnValue = JSON.stringify(errList);
+        return;
+    }
     const redmineLogic = new RedmineLogic();
     const gasLogic = new GasLogic();
     try {
-        const resForRedmine = await redmineLogic.initializeVersionLogic(data.majorVersion, data.minorVersion, data.maintenanceVersion, data.releaseDate);
-        console.log(resForRedmine)
-        const resForGas = await gasLogic.postScheduleList(data.eventDateTimeList);
+        const createFlag = await redmineLogic.createRedmineVersionLogic(data.majorVersion, data.minorVersion, data.maintenanceVersion, data.releaseDate);
+        const resForGas = await gasLogic.postScheduleList(data.eventDateTimeList, data.majorVersion, data.minorVersion, data.maintenanceVersion);
         console.log(resForGas);
         store.set("sendMessage","登録しました");
         event.returnValue = "登録しました。";

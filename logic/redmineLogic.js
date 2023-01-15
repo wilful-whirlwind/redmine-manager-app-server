@@ -4,10 +4,19 @@ const Store = require('electron-store')
 const store = new Store();
 
 module.exports = class RedmineLogic {
-    async initializeVersionLogic(major, minor, maintenance, dueDate) {
+    async createRedmineVersionLogic(major, minor, maintenance, dueDate) {
         let versionInfo = new VersionInfo(major, minor, maintenance, dueDate);
+        const targetVersionName = versionInfo.getVersionName();
         try {
-            return await RedmineApi.postVersion(1, versionInfo);
+            const versionList = await RedmineApi.getVersionList(1);
+            for (let i = 0; i < versionList.length; i++) {
+                 if (versionList[i].name === targetVersionName) {
+                     console.log("同名バージョンがあるため、skip");
+                     return false;
+                 }
+            }
+            await RedmineApi.postVersion(1, versionInfo);
+            return true;
         } catch (e) {
             console.log(e)
             throw new Error("バージョンの登録に失敗しました。");

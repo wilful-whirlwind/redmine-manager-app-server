@@ -12,7 +12,7 @@ module.exports = class GasLogic {
         }
     }
 
-    async getScheduleList() {
+    async getScheduleListFromEventMaster() {
         try {
             return await GasApi.getScheduleList();
         } catch (e) {
@@ -21,7 +21,34 @@ module.exports = class GasLogic {
         }
     }
 
-    async postScheduleList(eventDateTimeList) {
+    async getScheduleListFromGoogleCalendar(versionName) {
+        try {
+            return await GasApi.getScheduleListFromGoogleCalendar("2022-10-01", "2025-12-31", versionName);
+        } catch (e) {
+            console.log(e)
+            throw new Error("スケジュール情報の取得に失敗しました。");
+        }
+    }
+
+    /**
+     * versionをタイトルから除去（テンプレートとのマッチングのため）
+     * @param scheduleList
+     * @param versionName
+     * @return {*[]|*}
+     */
+    convertScheduleList(scheduleList, versionName) {
+        if (!Array.isArray(scheduleList)) {
+            return [];
+        }
+        for (let i = 0; i < scheduleList.length; i++) {
+            scheduleList[i].title = scheduleList[i].title.replace(versionName, "");
+        }
+        return scheduleList;
+    }
+
+    async postScheduleList(eventDateTimeList, major, minor, maintenance) {
+        let versionInfo = new VersionInfo(major, minor, maintenance, null);
+        const versionName = versionInfo.getVersionName("ver.", ".", "_");
         try {
             let currentEvent = null;
             for (let i = 0; i < eventDateTimeList.length; i++) {
@@ -32,6 +59,8 @@ module.exports = class GasLogic {
                 if (typeof currentEvent?.ymd === "undefined") {
                     continue;
                 }
+                await GasApi.deleteGoogleCalendarSchedule("2022-10-01", "2025-12-31", currentEvent.name, versionName);
+                currentEvent.name = versionName + currentEvent.name;
                 if (
                     typeof currentEvent?.from === "undefined" &&
                     typeof currentEvent?.to === "undefined"

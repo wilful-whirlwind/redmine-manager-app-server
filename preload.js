@@ -29,4 +29,7 @@ contextBridge.exposeInMainWorld('electronAPI',{
         return ipcRenderer.sendSync('dialog:createRedmineInfo', data);
     },
     sendMessage: (callback) => ipcRenderer.on('sendMessage', callback),
+    getCurrentEventListFromCalender:function(data) {
+        return ipcRenderer.sendSync('dialog:getCurrentEventListFromCalender', data);
+    }
 })

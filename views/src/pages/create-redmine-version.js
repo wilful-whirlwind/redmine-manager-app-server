@@ -18,18 +18,21 @@ export class CreateRedmineVersion extends React.Component {
             qaPeriodFrom: "",
             qaPeriodTo: "",
             releaseDate: "",
-            eventDateTimeList: []
+            eventDateTimeList: [],
+            versionIsChecked: false
         }
-        this.getInputTextValue = this.getInputTextValue.bind(this);
+        this.setInputValue = this.setInputValue.bind(this);
+        this.setVersionNumber = this.setVersionNumber.bind(this);
         this.saveInfo = this.saveInfo.bind(this);
         this.saveEventId = this.saveEventId.bind(this);
         this.send = this.send.bind(this);
         this.renderEventTable = this.renderEventTable.bind(this);
         this.renderEventDateRangeForm = this.renderEventDateRangeForm.bind(this);
         this.setEventDateTime = this.setEventDateTime.bind(this);
+        this.getCurrentEventListFromCalender = this.getCurrentEventListFromCalender.bind(this);
         this.eventList = React.createRef();
         const eventListInfo = window.electronAPI.getEventList(this.state);
-        console.log(eventListInfo);
+        this.dateTimeList = [];
         if (eventListInfo.status === "success") {
             this.state["event_id"] = [];
             this.eventList = eventListInfo.eventList;
@@ -41,16 +44,20 @@ export class CreateRedmineVersion extends React.Component {
         }
     }
 
-    //stateのcountの値を更新するコールバック関数
-    getInputTextValue( name, value ) {
+    setInputValue(name, value) {
         let state = {};
         state[name] = value;
-        this.setState(state) ;
+        this.setState(state);
     }
+
+    setVersionNumber(name, value) {
+        this.setInputValue(name, value);
+        this.setInputValue("versionIsChecked", false);
+    }
+
     async send() {
         let state = this.state;
         this.setState(state);
-        console.log(this.state);
         await window.electronAPI.initializeVersion(this.state);
         
     }
@@ -69,12 +76,10 @@ export class CreateRedmineVersion extends React.Component {
 
     saveInfo(stateKey, namePrefix) {
         return function(event) {
-            console.log(event.target);
             let state = this.state;
             let trackerId = event.target.name.replace(namePrefix, "");
             state[stateKey][trackerId] = event.target.type === "checkbox" ? event.target.checked : event.target.value;
             this.setState(state);
-            console.log(this.state);
         }.bind((this));
     }
 
@@ -92,10 +97,36 @@ export class CreateRedmineVersion extends React.Component {
             }
         }
         let state = this.state;
-        console.log(state);
         let resFunc = function(e) {
-            const inputTime = e.format('HH:mm:ss');
-            const inputDate = e.format('YYYY-MM-DD');
+            let inputTime = "";
+            let inputDate = "";
+            if (e.constructor.name === "Date") {
+                let zeroFillMonth = "";
+                let zeroFillDay = "";
+                let zeroFillHours = "";
+                let zeroFillMinutes = "";
+                let zeroFillSeconds = "";
+                if (e.getUTCMonth() < 9) {
+                    zeroFillMonth = "0";
+                }
+                if (e.getUTCDay() < 10) {
+                    zeroFillDay = "0";
+                }
+                if (e.getUTCHours() < 10) {
+                    zeroFillHours = "0";
+                }
+                if (e.getUTCMinutes() < 10) {
+                    zeroFillMinutes = "0";
+                }
+                if (e.getUTCSeconds() < 10) {
+                    zeroFillSeconds = "0";
+                }
+                inputTime = zeroFillHours + e.getUTCHours() + ":" + zeroFillMinutes + e.getUTCMinutes() + ":" + zeroFillSeconds + e.getUTCSeconds();
+                inputDate = e.getUTCFullYear() + "-" + zeroFillMonth + (e.getUTCMonth() + 1) + "-" + zeroFillDay + e.getUTCDate();
+            } else {
+                inputTime = e.format('HH:mm:ss');
+                inputDate = e.format('YYYY-MM-DD');
+            }
             console.log(inputDate);
             console.log(inputTime);
             console.log(targetEvent);
@@ -103,10 +134,13 @@ export class CreateRedmineVersion extends React.Component {
             targetEvent.id = eventId;
             targetEvent.name = eventName;
             if (dateTimeDivision === 'from') {
+                this.dateTimeList["event-from-" + eventId] = inputTime;
                 targetEvent.from = inputTime;
             } else if (dateTimeDivision === 'to') {
+                this.dateTimeList["event-to-" + eventId] = inputTime;
                 targetEvent.to = inputTime;
             } else if (dateTimeDivision === 'ymd') {
+                this.dateTimeList["event-ymd-" + eventId] = inputDate;
                 targetEvent.ymd = inputDate;
             }
             if (eventDateTimeListIndex === -1) {
@@ -118,18 +152,51 @@ export class CreateRedmineVersion extends React.Component {
                 return {eventDateTimeList: state.eventDateTimeList}
             });
         }
+
         resFunc = resFunc.bind(this);
         return resFunc;
     }
 
+    async getCurrentEventListFromCalender() {
+        const versionInfo = await window.electronAPI.getCurrentEventListFromCalender(this.state);
+        if (
+            versionInfo?.status !== "success" ||
+            !Array.isArray(versionInfo?.eventList)
+        ) {
+            alert("google calendar情報の取得に失敗しました。");
+        }
+        console.log(versionInfo);
+        let e = {};
+        this.dateTimeList = [];
+        this.setState((state) => {
+            return {eventDateTimeList: []}
+        });
+        for (let i = 0; i < versionInfo.eventList.length; i++) {
+            for (let j = 0; j < this.eventList.length; j++) {
+                if (versionInfo.eventList[i].title === this.eventList[j].name) {
+                    e = new Date(versionInfo.eventList[i].start);
+                    this.setEventDateTime('ymd', this.eventList[j].id, this.eventList[j].name)(e);
+                    if (versionInfo.eventList[i].all_day_event_flag) {
+                        break;
+                    }
+                    this.setEventDateTime('from', this.eventList[j].id, this.eventList[j].name)(e);
+                    e = new Date(versionInfo.eventList[i].end);
+                    this.setEventDateTime('to', this.eventList[j].id, this.eventList[j].name)(e);
+                }
+            }
+        }
+        this.setInputValue("versionIsChecked", true);
+    }
+
     renderEventDateRangeForm(event) {
-        console.log(event);
         if (event.all_day_flag) {
             return "終日";
         } else {
             return (
                 <>
                     <Datetime
+                        id={"event-from-" + event.id}
+                        value={this.dateTimeList["event-from-" + event.id]}
                         locale={"ja"}
                         dateFormat={false}
                         timeFormat="HH:mm:ss"
@@ -137,6 +204,8 @@ export class CreateRedmineVersion extends React.Component {
                     />
                     〜
                     <Datetime
+                        className={"event-to-" + event.id}
+                        value={this.dateTimeList["event-to-" + event.id]}
                         locale={"ja"}
                         dateFormat={false}
                         timeFormat="HH:mm:ss"
@@ -161,6 +230,8 @@ export class CreateRedmineVersion extends React.Component {
                 </td>
                 <td>
                     <Datetime
+                        className={"event-ymd-" + event.id}
+                        value={this.dateTimeList["event-ymd-" + event.id]}
                         locale={"ja"}
                         dateFormat="YYYY-MM-DD"
                         timeFormat={false}
@@ -181,6 +252,7 @@ export class CreateRedmineVersion extends React.Component {
                     <th>ID</th>
                     <th>ミーティング名</th>
                     <th>開始日時</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -206,14 +278,19 @@ export class CreateRedmineVersion extends React.Component {
                     <tbody>
                     <tr>
                         <td>
-                            <InputText id="majorVersion" callback={this.getInputTextValue} />
+                            <InputText id="majorVersion" callback={this.setVersionNumber} />
                         </td>
                         <td>
-                            <InputText id="minorVersion" callback={this.getInputTextValue} />
+                            <InputText id="minorVersion" callback={this.setVersionNumber} />
                         </td>
                         <td>
-                            <InputText id="maintenanceVersion" callback={this.getInputTextValue} />
+                            <InputText id="maintenanceVersion" callback={this.setVersionNumber} />
                         </td>
+                    </tr>
+                    <tr>
+                        <td><button type="button" class="btn btn-outline-secondary" onClick={this.getCurrentEventListFromCalender}>イベント情報の取得</button></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                     </tbody>
                 </table>
@@ -225,13 +302,13 @@ export class CreateRedmineVersion extends React.Component {
                             開発期間
                         </th>
                         <td>
-                            <InputText id="developmentPeriodFrom" callback={this.getInputTextValue} />
+                            <InputText id="developmentPeriodFrom" callback={this.setInputValue} />
                         </td>
                         <td>
                             ~
                         </td>
                         <td>
-                            <InputText id="developmentPeriodTo" callback={this.getInputTextValue} />
+                            <InputText id="developmentPeriodTo" callback={this.setInputValue} />
                         </td>
                     </tr>
                     <tr>
@@ -239,13 +316,13 @@ export class CreateRedmineVersion extends React.Component {
                             QA期間
                         </th>
                         <td>
-                            <InputText id="qaPeriodFrom" callback={this.getInputTextValue} />
+                            <InputText id="qaPeriodFrom" callback={this.setInputValue} />
                         </td>
                         <td>
                             ~
                         </td>
                         <td>
-                            <InputText id="qaPeriodTo" callback={this.getInputTextValue} />
+                            <InputText id="qaPeriodTo" callback={this.setInputValue} />
                         </td>
                     </tr>
                     <tr>
@@ -253,7 +330,7 @@ export class CreateRedmineVersion extends React.Component {
                             リリース日
                         </th>
                         <td>
-                            <InputText id="releaseDate" callback={this.getInputTextValue} />
+                            <InputText id="releaseDate" callback={this.setInputValue} />
                         </td>
                         <td>
                         </td>
@@ -264,7 +341,7 @@ export class CreateRedmineVersion extends React.Component {
                 </table>
                 <SectionLabel label="Meeting" />
                 {this.renderEventTable()}
-                <button class="btn btn-outline-primary" onClick={() => this.send()}>バージョン生成</button>
+                <button class="btn btn-outline-primary" disabled={!this.state.versionIsChecked} onClick={() => this.send()}>バージョン生成</button>
                 <Message message="登録しました。" id="fine"></Message>
             </div>
         );
