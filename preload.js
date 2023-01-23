@@ -31,5 +31,8 @@ contextBridge.exposeInMainWorld('electronAPI',{
     sendMessage: (callback) => ipcRenderer.on('sendMessage', callback),
     getCurrentEventListFromCalender:function(data) {
         return ipcRenderer.sendSync('dialog:getCurrentEventListFromCalender', data);
+    },
+    getTemplateTicketList:function (data) {
+        return ipcRenderer.sendSync('dialog:getTemplateTicketList', data);
     }
 })

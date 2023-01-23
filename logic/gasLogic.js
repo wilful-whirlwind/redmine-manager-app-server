@@ -12,6 +12,15 @@ module.exports = class GasLogic {
         }
     }
 
+    async getTemplateTicketList() {
+        try {
+            return await GasApi.getTemplateTicketList();
+        } catch (e) {
+            console.log(e)
+            throw new Error("テンプレートチケット情報の取得に失敗しました。");
+        }
+    }
+
     async getScheduleListFromEventMaster() {
         try {
             return await GasApi.getScheduleList();

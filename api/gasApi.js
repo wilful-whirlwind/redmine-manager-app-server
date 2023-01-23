@@ -16,6 +16,19 @@ module.exports = class GasApi extends AbstractApi {
         return res.userList;
     }
 
+    static async getTemplateTicketList() {
+        const url = store.get("gasGetListAPIEndPoint");
+        const query = {
+            "target": "template_ticket",
+            "template_ticket_id": "all"
+        };
+        let res = await this.callGetApi(url, {}, query);
+        if (typeof res?.ticketTemplateList === "undefined") {
+            throw new Error("ユーザ情報の取得に失敗しました。");
+        }
+        return res.ticketTemplateList;
+    }
+
     static async getScheduleListFromGoogleCalendar(from, to, versionName) {
         const url = store.get("gasGetListAPIEndPoint");
         const calendarId = store.get("gasPostScheduleAPICalenderId");

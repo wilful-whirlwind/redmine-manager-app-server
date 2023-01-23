@@ -9,6 +9,7 @@ const getRedmineVersionInfoAction = require("./action/getRedmineVersionInfoActio
 const getEventListAction = require("./action/getEventListAction");
 const saveRedmineConfigAction = require("./action/saveRedmineConfigAction");
 const getCurrentEventListFromCalendarAction = require("./action/getCurrentEventListFromCalendarAction");
+const getTemplateTicketListAction = require("./action/getTemplateTicketListAction");
 
 let win;
 const createWindow = () => {
@@ -37,6 +38,26 @@ const createWindow = () => {
   }
   win.webContents.on('will-navigate', handleUrlOpen);
   win.webContents.setWindowOpenHandler(handleUrlOpen);
+
+  // URL が `about:blank` であるウインドウのみが作成されます。
+  // ほかのすべての URL はブロックされます。
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    console.log(url);
+    if (url.indexOf('about:blank') > -1) {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          frame: false,
+          fullscreenable: false,
+          backgroundColor: '#FFF',
+          webPreferences: {
+            preload: 'child-preload.js',
+          }
+        }
+      }
+    }
+    return { action: 'deny' }
+  })
 
   // 開発ツールを有効化
   win.webContents.openDevTools();
@@ -95,4 +116,9 @@ ipcMain.on('dialog:saveRedmineConfig', saveRedmineConfigAction);
 ipcMain.on('dialog:getCurrentEventListFromCalender', async function(event, args) {
   console.log(args);
   await getCurrentEventListFromCalendarAction(event, args);
+});
+
+ipcMain.on('dialog:getTemplateTicketList', async function(event, args) {
+  console.log(args);
+  await getTemplateTicketListAction(event, args);
 });
