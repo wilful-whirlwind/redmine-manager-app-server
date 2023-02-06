@@ -32,7 +32,7 @@ export class Config extends React.Component {
         this.getInputTextValue = this.getInputTextValue.bind(this);
     }
 
-    //stateのcountの値を更新するコールバック関数
+    //stateの値を更新するコールバック関数
     getInputTextValue( name, value ){
         let state = {};
         state[name] = value;

@@ -23,40 +23,44 @@ export class CreateRedmineVersion extends React.Component {
             templateTicketDateList: [],
             versionIsChecked: false,
             showTreeFlag: false,
-            templateTicketTreeInfo: {
-                id: "1",
-                label: "プロジェクトチケット",
-                startDate: "2023-01-23",
-                endDate: "",
-                content: "test",
-                children: [
-                    {
-                        id: "2",
-                        label: "テストチケット(POS)",
-                        startDate: "",
-                        endDate: "",
-                        content: "test2",
-                        children: []
-                    },
-                    {
-                        id: "3",
-                        label: "テストチケット(在庫)",
-                        startDate: "",
-                        endDate: "",
-                        content: "## test",
-                        children: [
-                            {
-                                id: "5",
-                                label: "テストチケットA",
-                                startDate: "",
-                                endDate: "",
-                                content: "### test",
-                                children: []
-                            }
-                        ]
-                    },
-                ]
-            }
+            templateTicketTreeInfo: [
+                {
+                    id: "1",
+                    label: "プロジェクトチケット",
+                    startDate: "2023-01-23",
+                    endDate: "",
+                    content: "test",
+                    useFlag: true,
+                    children: ["2","3",]
+                },
+                {
+                    id: "2",
+                    label: "テストチケット(POS)",
+                    startDate: "",
+                    endDate: "",
+                    content: "test2",
+                    useFlag: true,
+                    children: []
+                },
+                {
+                    id: "3",
+                    label: "テストチケット(在庫)",
+                    startDate: "",
+                    endDate: "",
+                    content: "## test",
+                    useFlag: true,
+                    children: ["5"]
+                },
+                {
+                    id: "5",
+                    label: "テストチケットA",
+                    startDate: "",
+                    endDate: "",
+                    content: "### test",
+                    useFlag: true,
+                    children: []
+                }
+            ],
         }
         this.setInputValue = this.setInputValue.bind(this);
         this.setVersionNumber = this.setVersionNumber.bind(this);
@@ -446,8 +450,13 @@ export class CreateRedmineVersion extends React.Component {
         this.setState(this.state);
     }
 
+    updateTreeInfo( id, node ){
+        console.log(id);
+        console.log(node);
+    }
+
     renderTemplateTicketTree() {
-        return (<TemplateTicketTree tree={this.state.templateTicketTreeInfo}></TemplateTicketTree>);
+        return (<TemplateTicketTree tree={this.state.templateTicketTreeInfo} callback={this.updateTreeInfo}></TemplateTicketTree>);
     }
 
     render() {

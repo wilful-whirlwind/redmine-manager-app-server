@@ -25,7 +25,6 @@ export class InputText extends React.Component {
     }
 
     bindValue(event) {
-        console.log(this.id, event.target.value);
         this.state.callback(this.id, event.target.value);
         this.value = event.target.value;
     }
