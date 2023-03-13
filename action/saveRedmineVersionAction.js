@@ -32,8 +32,10 @@ module.exports = async function(event, data) {
     const redmineLogic = new RedmineLogic();
     const gasLogic = new GasLogic();
     try {
-        const createFlag = await redmineLogic.createRedmineVersionLogic(data.majorVersion, data.minorVersion, data.maintenanceVersion, data.releaseDate);
+        const createdVersion = await redmineLogic.createRedmineVersionLogic(data.majorVersion, data.minorVersion, data.maintenanceVersion, data.releaseDate);
         const resForGas = await gasLogic.postScheduleList(data.eventDateTimeList, data.majorVersion, data.minorVersion, data.maintenanceVersion);
+        const ticketResult = await redmineLogic.createTicketList(data.templateTicketTreeInfo, createdVersion.id, createdVersion.project.id);
+
         console.log(resForGas);
         store.set("sendMessage","登録しました");
         event.returnValue = "登録しました。";

@@ -4,7 +4,8 @@ import {TreeView, TreeItem} from "@mui/lab";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MDEditor from '@uiw/react-md-editor';
-import Datetime from 'react-datetime';
+import DatePicker from 'react-datepicker';
+import './react-datepicker.css';
 
 export class TemplateTicketTree extends React.Component {
     constructor(props) {
@@ -16,10 +17,13 @@ export class TemplateTicketTree extends React.Component {
         this.setNodeValue = this.setNodeValue.bind(this);
         this.toggleStyle = this.toggleStyle.bind(this);
         this.changeUseFlag = this.changeUseFlag.bind(this);
+        this.setDate = this.setDate.bind(this);
         this.tree = React.createRef();
         this.tree = this.props.tree;
         for (let i = 0; i < this.tree.length; i++) {
             this.tree[i].disabled = false;
+            this.tree[i].startDate = this.tree[i].startDate ?? "";
+            this.tree[i].endDate = this.tree[i].endDate ?? "";
         }
         this.activeStyle = {
             color: "#000"
@@ -27,7 +31,7 @@ export class TemplateTicketTree extends React.Component {
         this.inactiveStyle = {
             color: "#797979"
         };
-        const defaultNode = this.searchNode("1");
+        const defaultNode = this.searchNode(1);
         this.state = {
             id: defaultNode.id,
             label: defaultNode.label,
@@ -38,6 +42,7 @@ export class TemplateTicketTree extends React.Component {
             disabled: defaultNode.disabled,
             callback: this.props.callback
         };
+        this.setState(this.state);
     }
 
     searchNode(id, nodeId) {
@@ -69,8 +74,8 @@ export class TemplateTicketTree extends React.Component {
             const targetNode = searchNode(id);
             this.state.id = targetNode.id;
             this.state.content = targetNode.content;
-            this.state.startDate = targetNode.startDate;
-            this.state.endDate = targetNode.endDate;
+            this.state.startDate = targetNode.startDate ?? "";
+            this.state.endDate = targetNode.endDate ?? "";
             this.state.label = targetNode.label;
             this.state.useFlag = targetNode.useFlag;
             this.state.disabled = targetNode.disabled;
@@ -105,8 +110,10 @@ export class TemplateTicketTree extends React.Component {
         let resFunc = function (e) {
             let state = {};
             let input = null;
-            if (e.constructor.name === "S") {
-                input = e.format('YYYY-MM-DD');
+            if (!e) {
+                
+            } else if (e.constructor.name === "Date") {
+                 input = "" + e.getFullYear() + "-" + (e.getMonth()+1).toString().padStart(2, '0') + "-" + e.getDate().toString().padStart(2, '0');
             } else if (typeof e === "string") {
                 input = e;
             } else {
@@ -122,11 +129,11 @@ export class TemplateTicketTree extends React.Component {
             for (let i = 0; i < this.tree.length; i++) {
                 if (this.tree[i].id === this.state.id) {
                     this.tree[i][key] = input;
+                    break;
                 }
             }
             node[key] = input;
             this.state.callback(this.state.id, node);
-            console.log(this.tree);
         }
         resFunc = resFunc.bind(this);
         return resFunc;
@@ -137,6 +144,16 @@ export class TemplateTicketTree extends React.Component {
             return this.activeStyle;
         }
         return this.inactiveStyle;
+    }
+    setDate(dateStr) {
+        if (dateStr === null || dateStr.length < 1) {
+            return null;
+        }
+        let ymdArr = dateStr.split("-");
+        const res = new Date(parseInt(ymdArr[0]), parseInt(ymdArr[1]) - 1, parseInt(ymdArr[2]));
+        console.log(dateStr);
+        console.log(res);
+        return new Date(parseInt(ymdArr[0]), parseInt(ymdArr[1]) - 1, parseInt(ymdArr[2]));
     }
 
     renderTree(node) {
@@ -207,12 +224,9 @@ export class TemplateTicketTree extends React.Component {
                                     </label>
                                 </div>
                                 <div className={"col-auto"}>
-                                    <Datetime
-                                        id={"startDate"}
-                                        value={this.state.startDate}
-                                        locale={"ja"}
-                                        dateFormat="YYYY-MM-DD"
-                                        timeFormat={false}
+                                    <DatePicker
+                                        selected={this.setDate(this.state.startDate)}
+                                        dateFormat="yyyy-MM-dd"
                                         onChange={this.setNodeValue("startDate")}
                                     />
                                 </div>
@@ -220,12 +234,9 @@ export class TemplateTicketTree extends React.Component {
                                     <span className="form-control-plaintext">～</span>
                                 </div>
                                 <div className={"col-auto"}>
-                                    <Datetime
-                                        id={"endDate"}
-                                        value={this.state.endDate}
-                                        locale={"ja"}
-                                        dateFormat="YYYY-MM-DD"
-                                        timeFormat={false}
+                                    <DatePicker
+                                        selected={this.setDate(this.state.endDate)}
+                                        dateFormat="yyyy-MM-dd"
                                         onChange={this.setNodeValue("endDate")}
                                     />
                                 </div>

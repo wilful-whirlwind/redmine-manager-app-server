@@ -23,44 +23,6 @@ export class CreateRedmineVersion extends React.Component {
             templateTicketDateList: [],
             versionIsChecked: false,
             showTreeFlag: false,
-            templateTicketTreeInfo: [
-                {
-                    id: "1",
-                    label: "プロジェクトチケット",
-                    startDate: "2023-01-23",
-                    endDate: "",
-                    content: "test",
-                    useFlag: true,
-                    children: ["2","3",]
-                },
-                {
-                    id: "2",
-                    label: "テストチケット(POS)",
-                    startDate: "",
-                    endDate: "",
-                    content: "test2",
-                    useFlag: true,
-                    children: []
-                },
-                {
-                    id: "3",
-                    label: "テストチケット(在庫)",
-                    startDate: "",
-                    endDate: "",
-                    content: "## test",
-                    useFlag: true,
-                    children: ["5"]
-                },
-                {
-                    id: "5",
-                    label: "テストチケットA",
-                    startDate: "",
-                    endDate: "",
-                    content: "### test",
-                    useFlag: true,
-                    children: []
-                }
-            ],
         }
         this.setInputValue = this.setInputValue.bind(this);
         this.setVersionNumber = this.setVersionNumber.bind(this);
@@ -69,7 +31,6 @@ export class CreateRedmineVersion extends React.Component {
         this.saveTemplateTicketId = this.saveTemplateTicketId.bind(this);
         this.send = this.send.bind(this);
         this.renderEventTable = this.renderEventTable.bind(this);
-        this.renderTemplateTicketTable = this.renderTemplateTicketTable.bind(this);
         this.renderEventDateRangeForm = this.renderEventDateRangeForm.bind(this);
         this.setEventDateTime = this.setEventDateTime.bind(this);
         this.getCurrentEventListFromCalender = this.getCurrentEventListFromCalender.bind(this);
@@ -77,7 +38,6 @@ export class CreateRedmineVersion extends React.Component {
         this.renderTemplateTicketTree = this.renderTemplateTicketTree.bind(this);
         this.childRef = React.createRef();
         this.eventList = React.createRef();
-        this.templateTicketList = React.createRef();
         const eventListInfo = window.electronAPI.getEventList(this.state);
         this.dateTimeList = [];
         this.state["event_id"] = [];
@@ -89,13 +49,9 @@ export class CreateRedmineVersion extends React.Component {
         }
 
         const templateTicketListInfo = window.electronAPI.getTemplateTicketList(this.state);
-        console.log(templateTicketListInfo)
         this.state["template_ticket_id"] = [];
         if (templateTicketListInfo.status === "success") {
-            this.templateTicketList = templateTicketListInfo.templateTicketList;
-            for (let i = 0; i < this.templateTicketList.length; i++) {
-                this.state["template_ticket_id"][this.templateTicketList[i].id] = true;
-            }
+            this.state.templateTicketTreeInfo = templateTicketListInfo.templateTicketList;
         }
     }
 
@@ -392,59 +348,6 @@ export class CreateRedmineVersion extends React.Component {
         )
     }
 
-    renderTemplateTicketTable() {
-        const rows = this.templateTicketList.map((templateTicket,index) =>
-            <tr key={templateTicket.id}>
-                <td>
-                    <input type="checkbox" name={"template_ticket_id_" + templateTicket.id} checked={this.state["template_ticket_id"][templateTicket.id]} onChange={this.saveTemplateTicketId} />
-                </td>
-                <td>
-                    {templateTicket.id}
-                </td>
-                <td>
-                    {templateTicket.name}
-                </td>
-                <td>
-                    <Datetime
-                        className={"template_ticket-from-" + templateTicket.id}
-                        value={this.dateTimeList["template_ticket-from-" + templateTicket.id]}
-                        locale={"ja"}
-                        dateFormat="YYYY-MM-DD"
-                        timeFormat={false}
-                        onChange={this.setTemplateTicketDate('from', templateTicket.id, templateTicket.name)}
-                    />
-                </td>
-                <td>
-                    <Datetime
-                        className={"template_ticket-to-" + templateTicket.id}
-                        value={this.dateTimeList["template_ticket-to-" + templateTicket.id]}
-                        locale={"ja"}
-                        dateFormat="YYYY-MM-DD"
-                        timeFormat={false}
-                        onChange={this.setTemplateTicketDate('to', templateTicket.id, templateTicket.name)}
-                    />
-                </td>
-            </tr>
-        );
-
-        return (
-            <table class="table mgr-tbl">
-                <thead>
-                <tr>
-                    <th>有効</th>
-                    <th>ID</th>
-                    <th>チケット名</th>
-                    <th>開始日</th>
-                    <th>終了日</th>
-                </tr>
-                </thead>
-                <tbody>
-                {rows}
-                </tbody>
-            </table>
-        )
-    }
-
     openTree() {
         this.state.showTreeFlag = true;
         this.setState(this.state);
@@ -543,7 +446,6 @@ export class CreateRedmineVersion extends React.Component {
                 <div hidden={this.state.showTreeFlag} id={"template-ticket-tree"}>
                     {this.renderTemplateTicketTree()}
                 </div>
-                {this.renderTemplateTicketTable()}
                 <button class="btn btn-outline-primary" disabled={!this.state.versionIsChecked} onClick={() => this.send()}>バージョン生成</button>
                 <Message ref={this.childRef} message={""} id="fine" visible={false}></Message>
             </div>

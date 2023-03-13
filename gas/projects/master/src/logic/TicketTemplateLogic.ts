@@ -30,9 +30,10 @@ export class TicketTemplateLogic {
                 id: values[row][0],
                 name: values[row][1],
                 tracker_id: values[row][2],
-                categoryName: values[row][3],
+                category_id: values[row][3],
                 redmine_user_id: values[row][4],
                 parent_issue_id: values[row][5],
+                content: values[row][6],
             });
         }
 
