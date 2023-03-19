@@ -111,7 +111,7 @@ export class TemplateTicketTree extends React.Component {
             let state = {};
             let input = null;
             if (!e) {
-                
+
             } else if (e.constructor.name === "Date") {
                  input = "" + e.getFullYear() + "-" + (e.getMonth()+1).toString().padStart(2, '0') + "-" + e.getDate().toString().padStart(2, '0');
             } else if (typeof e === "string") {

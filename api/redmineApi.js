@@ -71,9 +71,9 @@ module.exports = class RedmineApi extends AbstractApi {
         return result.trackers;
     }
 
-    static async postTicket(ticket, fixedVersionId, projectId) {
+    static async postTicket(ticket, fixedVersionId, projectId, versionInfo) {
         const redmineUrl = store.get("redmineUri");
-        const result = await this.callPostApi(redmineUrl + "/issues.json", RedmineApi.#generateHeader(), RedmineApi.#generateIssuesRequest(ticket, fixedVersionId, projectId));
+        const result = await this.callPostApi(redmineUrl + "/issues.json", RedmineApi.#generateHeader(), RedmineApi.#generateIssuesRequest(ticket, fixedVersionId, projectId, versionInfo));
         if (!result.hasOwnProperty("data")) {
             throw new Error("チケットの登録に失敗しました。")
         }
@@ -118,11 +118,11 @@ module.exports = class RedmineApi extends AbstractApi {
         }
     }
 
-    static #generateIssuesRequest(ticket, fixedVersionId, projectId) {
+    static #generateIssuesRequest(ticket, fixedVersionId, projectId, versionInfo) {
         return {
             issue: {
                 project_id: projectId,
-                subject: ticket.label,
+                subject: ticket.label + versionInfo.getVersionName(" ver.", ".", ""),
                 tracker_id: ticket.trackerId,
                 status_id: 1, // 新規
                 priority_id: 2, // 通常

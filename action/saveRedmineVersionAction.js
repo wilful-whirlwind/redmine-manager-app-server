@@ -2,6 +2,7 @@ const RedmineLogic = require("../logic/redmineLogic");
 const GasLogic = require("../logic/gasLogic");
 const Store = require('electron-store')
 const {app} = require("electron");
+const VersionInfo = require("../entity/versionInfo");
 const store = new Store();
 
 
@@ -32,9 +33,10 @@ module.exports = async function(event, data) {
     const redmineLogic = new RedmineLogic();
     const gasLogic = new GasLogic();
     try {
+        let versionInfo = new VersionInfo(data.majorVersion, data.minorVersion, data.maintenanceVersion, data.releaseDate);
         const createdVersion = await redmineLogic.createRedmineVersionLogic(data.majorVersion, data.minorVersion, data.maintenanceVersion, data.releaseDate);
         const resForGas = await gasLogic.postScheduleList(data.eventDateTimeList, data.majorVersion, data.minorVersion, data.maintenanceVersion);
-        const ticketResult = await redmineLogic.createTicketList(data.templateTicketTreeInfo, createdVersion.id, createdVersion.project.id);
+        const ticketResult = await redmineLogic.createTicketList(data.templateTicketTreeInfo, createdVersion.id, createdVersion.project.id, versionInfo);
 
         console.log(resForGas);
         store.set("sendMessage","登録しました");

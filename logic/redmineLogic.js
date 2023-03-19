@@ -98,7 +98,7 @@ module.exports = class RedmineLogic {
         }
     }
 
-    async createTicketList(ticketList, fixedVersionId, projectId) {
+    async createTicketList(ticketList, fixedVersionId, projectId, versionInfo) {
         let response = 0;
         let currentPostTargetList = [];
         let targetTicket = null;
@@ -109,7 +109,7 @@ module.exports = class RedmineLogic {
                 ticketList[i].redmineParentIssueId = "";
                 ticketList[i].redmineIssueId = "";
                 if (!ticketList[i].parent) {
-                    response = await RedmineApi.postTicket(ticketList[i], fixedVersionId, projectId);
+                    response = await RedmineApi.postTicket(ticketList[i], fixedVersionId, projectId, versionInfo);
                     ticketList[i].redmineIssueId = response.id;
                     ticketList[i].childrenIsPosted = false;
                     postedTicketList.push(ticketList[i]);
@@ -139,7 +139,7 @@ module.exports = class RedmineLogic {
                     currentPostTargetList.push(ticketList[i]);
                 }
                 for (let i = 0; i < currentPostTargetList.length; i++) {
-                    response = await RedmineApi.postTicket(currentPostTargetList[i], fixedVersionId, projectId);
+                    response = await RedmineApi.postTicket(currentPostTargetList[i], fixedVersionId, projectId, versionInfo);
                     currentPostTargetList[i].redmineIssueId = response.id;
                     currentPostTargetList[i].childrenIsPosted = false;
                     postedTicketList.push(currentPostTargetList[i]);
