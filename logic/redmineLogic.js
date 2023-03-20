@@ -109,6 +109,10 @@ module.exports = class RedmineLogic {
                 ticketList[i].redmineParentIssueId = "";
                 ticketList[i].redmineIssueId = "";
                 if (!ticketList[i].parent) {
+                    if (!ticketList[i].useFlag) {
+                        console.log("rootチケットを作成しないので終了。");
+                        return [];
+                    }
                     response = await RedmineApi.postTicket(ticketList[i], fixedVersionId, projectId, versionInfo);
                     ticketList[i].redmineIssueId = response.id;
                     ticketList[i].childrenIsPosted = false;
@@ -139,7 +143,9 @@ module.exports = class RedmineLogic {
                     currentPostTargetList.push(ticketList[i]);
                 }
                 for (let i = 0; i < currentPostTargetList.length; i++) {
-                    response = await RedmineApi.postTicket(currentPostTargetList[i], fixedVersionId, projectId, versionInfo);
+                    if (currentPostTargetList[i].useFlag) {
+                        response = await RedmineApi.postTicket(currentPostTargetList[i], fixedVersionId, projectId, versionInfo);
+                    }
                     currentPostTargetList[i].redmineIssueId = response.id;
                     currentPostTargetList[i].childrenIsPosted = false;
                     postedTicketList.push(currentPostTargetList[i]);
