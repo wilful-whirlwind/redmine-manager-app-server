@@ -34,5 +34,8 @@ contextBridge.exposeInMainWorld('electronAPI',{
     },
     getTemplateTicketList:function (data) {
         return ipcRenderer.sendSync('dialog:getTemplateTicketList', data);
+    },
+    getCustomFieldList: function (data) {
+        return ipcRenderer.sendSync('dialog:getCustomFieldList', data);
     }
 })

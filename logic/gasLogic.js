@@ -21,6 +21,16 @@ module.exports = class GasLogic {
         }
     }
 
+    async getCustomFieldList() {
+        try {
+            return await GasApi.getCustomFieldList();
+        } catch (e) {
+            console.log(e)
+            throw new Error("カスタムフィールド情報の取得に失敗しました。");
+        }
+    }
+
+
     async getScheduleListFromEventMaster() {
         try {
             return await GasApi.getScheduleList();

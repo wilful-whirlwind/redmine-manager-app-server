@@ -4,6 +4,7 @@ import {getTicketTemplateAction} from "./action/GetTicketTemplateAction";
 import {postCalendarScheduleAction} from "./action/PostCalendarScheduleAction";
 import {getScheduleFromCalendarAction} from "./action/GetScheduleFromCalendarAction";
 import {deleteScheduleFromCalendarAction} from "./action/DeleteScheduleFromCalendarAction";
+import {getCustomFieldsAction} from "./action/GetCustomFieldsAction";
 
 export function frontController(params: any, httpMethod: string): any
 {
@@ -26,6 +27,9 @@ export function frontController(params: any, httpMethod: string): any
                 break;
             case "calendar":
                 res = getScheduleFromCalendarAction(params);
+                break;
+            case "custom_field":
+                res = getCustomFieldsAction(params);
                 break;
             default:
         }

@@ -73,7 +73,8 @@ module.exports = class RedmineApi extends AbstractApi {
 
     static async postTicket(ticket, fixedVersionId, projectId, versionInfo) {
         const redmineUrl = store.get("redmineUri");
-        const result = await this.callPostApi(redmineUrl + "/issues.json", RedmineApi.#generateHeader(), RedmineApi.#generateIssuesRequest(ticket, fixedVersionId, projectId, versionInfo));
+        const request = RedmineApi.#generateIssuesRequest(ticket, fixedVersionId, projectId, versionInfo);
+        const result = await this.callPostApi(redmineUrl + "/issues.json", RedmineApi.#generateHeader(), request);
         if (!result.hasOwnProperty("data")) {
             throw new Error("チケットの登録に失敗しました。")
         }
@@ -128,12 +129,48 @@ module.exports = class RedmineApi extends AbstractApi {
                 priority_id: 2, // 通常
                 start_date: ticket.startDate,
                 due_date: ticket.endDate,
-                description: ticket.description,
+                description: ticket.content,
                 category_id: ticket.categoryId,
                 fixed_version_id: fixedVersionId,
                 parent_issue_id: ticket.redmineParentIssueId,
+                custom_fields: RedmineApi.#createCustomFieldFromFlatten(ticket, "customField", "_"),
                 is_private: false
             }
         }
+    }
+
+
+    /**
+     * flattenされた項目を配列に変換する（カスタムフィールド用）
+     * @param obj
+     * @param key
+     * @param separator
+     * @param outputKey
+     */
+    static #createCustomFieldFromFlatten(obj, key, separator, outputKey = "") {
+        let tmpKey = [];
+        let newKey = key;
+        if (outputKey.length > 0) {
+            newKey = outputKey;
+        }
+        obj[newKey] = [];
+        let outputArray = [];
+        for (let currentKey in obj) {
+            if (currentKey.indexOf(key) < 0) {
+                continue;
+            }
+            tmpKey = currentKey.split(separator);
+            if (tmpKey.length !== 2 || tmpKey[0] !== key) {
+                continue;
+            }
+            if (obj[currentKey].length < 1) {
+                continue;
+            }
+            outputArray.push({
+                id: tmpKey[1],
+                value: obj[currentKey]
+            });
+        }
+        return outputArray;
     }
 }

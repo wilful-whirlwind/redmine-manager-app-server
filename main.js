@@ -6,6 +6,7 @@ const loadConfigAction = require("./action/loadConfigAction");
 const getRedmineTrackerListAction = require("./action/getRedmineTrackerListAction");
 const getRedmineVersionListAction = require("./action/getRedmineVersionListAction");
 const getRedmineVersionInfoAction = require("./action/getRedmineVersionInfoAction");
+const getCustomFieldListAction = require("./action/getCustomFieldListAction");
 const getEventListAction = require("./action/getEventListAction");
 const saveRedmineConfigAction = require("./action/saveRedmineConfigAction");
 const getCurrentEventListFromCalendarAction = require("./action/getCurrentEventListFromCalendarAction");
@@ -121,4 +122,9 @@ ipcMain.on('dialog:getCurrentEventListFromCalender', async function(event, args)
 ipcMain.on('dialog:getTemplateTicketList', async function(event, args) {
   console.log(args);
   await getTemplateTicketListAction(event, args);
+});
+
+ipcMain.on('dialog:getCustomFieldList', async function(event, args) {
+  console.log(args);
+  await getCustomFieldListAction(event);
 });

@@ -1,11 +1,12 @@
 import React from 'react';
 import './template-ticket-tree.css';
-import {TreeView, TreeItem} from "@mui/lab";
+import {TreeItem, TreeView} from "@mui/lab";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MDEditor from '@uiw/react-md-editor';
 import DatePicker from 'react-datepicker';
 import './react-datepicker.css';
+import {Box, Button, Modal, Typography} from "@mui/material";
 
 export class TemplateTicketTree extends React.Component {
     constructor(props) {
@@ -18,12 +19,33 @@ export class TemplateTicketTree extends React.Component {
         this.toggleStyle = this.toggleStyle.bind(this);
         this.changeUseFlag = this.changeUseFlag.bind(this);
         this.setDate = this.setDate.bind(this);
+        this.handleOpen = this.handleOpen.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+
         this.tree = React.createRef();
         this.tree = this.props.tree;
+        this.customFieldList = React.createRef();
+        this.customFieldList = this.props.customFieldList;
+        let customFieldDefaultList = [];
+        for (let i = 0; i < this.customFieldList.length; i++) {
+            customFieldDefaultList[this.customFieldList[i].id] = {
+                trackerId: this.customFieldList[i].tracker_id,
+                value: this.customFieldList[i].default_value
+            };
+        }
+        console.log(customFieldDefaultList);
+        let tmpKey = [];
         for (let i = 0; i < this.tree.length; i++) {
             this.tree[i].disabled = false;
             this.tree[i].startDate = this.tree[i].startDate ?? "";
             this.tree[i].endDate = this.tree[i].endDate ?? "";
+            for (let customFieldId in customFieldDefaultList) {
+                if (Number(this.tree[i].trackerId) !== Number(customFieldDefaultList[customFieldId].trackerId)) {
+                    continue;
+                }
+                this.tree[i]["customField_" + customFieldId] = this.tree[i]["customField_" + customFieldId] ?? customFieldDefaultList[customFieldId].value;
+            }
+            console.log(this.tree[i]);
         }
         this.activeStyle = {
             color: "#000"
@@ -31,6 +53,19 @@ export class TemplateTicketTree extends React.Component {
         this.inactiveStyle = {
             color: "#797979"
         };
+
+        this.modalStyle = {
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 750,
+            bgcolor: '#fff',
+            border: '2px solid #000',
+            p: 4,
+            modalTarget: null,
+        };
+
         const defaultNode = this.searchNode(1);
         this.state = {
             id: defaultNode.id,
@@ -38,9 +73,11 @@ export class TemplateTicketTree extends React.Component {
             startDate: defaultNode.startDate,
             endDate: defaultNode.endDate,
             content: defaultNode.content,
+            trackerId: defaultNode.trackerId,
             useFlag: true,
             disabled: defaultNode.disabled,
-            callback: this.props.callback
+            callback: this.props.callback,
+            open: false
         };
         this.setState(this.state);
     }
@@ -77,8 +114,19 @@ export class TemplateTicketTree extends React.Component {
             this.state.startDate = targetNode.startDate ?? "";
             this.state.endDate = targetNode.endDate ?? "";
             this.state.label = targetNode.label;
+            this.state.trackerId = targetNode.trackerId;
             this.state.useFlag = targetNode.useFlag;
             this.state.disabled = targetNode.disabled;
+            for( let key in this.state ) {
+                if (key.indexOf("customField") > -1) {
+                    this.state[key] = "";
+                }
+            }
+            for( let key in targetNode ) {
+                if (key.indexOf("customField") > -1) {
+                    this.state[key] = targetNode[key];
+                }
+            }
             this.setState(this.state);
         }
         resFunc = resFunc.bind(this);
@@ -156,6 +204,20 @@ export class TemplateTicketTree extends React.Component {
         return new Date(parseInt(ymdArr[0]), parseInt(ymdArr[1]) - 1, parseInt(ymdArr[2]));
     }
 
+    handleOpen() {
+        return function () {
+            this.state.open = true;
+            this.setState(this.state);
+            console.log(this.state);
+        }.bind(this);
+    }
+
+    handleClose() {
+        this.state.open = false;
+        this.state.modalTarget = null;
+        this.setState(this.state);
+    }
+
     renderTree(node) {
         const tree = <TreeItem style={this.toggleStyle(node)} nodeId={node.id} label={node.label} onClick={this.setTicketDetail(node.id)}></TreeItem>;
         tree.props.children = [];
@@ -169,6 +231,34 @@ export class TemplateTicketTree extends React.Component {
         return tree;
     }
 
+    renderCustomFieldRows() {
+        return this.customFieldList.map((customField, index) => {
+            if (customField.tracker_id !== this.state.trackerId) {
+                return "";
+            }
+            return (
+                <>
+                    <tr>
+                        <td>
+                            {customField.id}
+                        </td>
+                        <td>
+                            {customField.name}
+                        </td>
+                        <td>
+                            <input
+                                type="text"
+                                value={this.state["customField_" + customField.id]}
+                                class="form-control"
+                                onChange={this.setNodeValue("customField_" + customField.id)}
+                                maxLength={128}
+                            />
+                        </td>
+                    </tr>
+                </>
+            )
+        });
+    }
     render() {
         return (
             <div className={"container"}>
@@ -242,6 +332,14 @@ export class TemplateTicketTree extends React.Component {
                                 </div>
                             </div>
                             <div className={"row"}>
+                                <Button
+                                    variant="text"
+                                    onClick={this.handleOpen()}
+                                >
+                                    カスタムフィールドの設定
+                                </Button>
+                            </div>
+                            <div className={"row"}>
                                 <div className={"col-12"}>
                                     <MDEditor
                                         value={this.state.content}
@@ -252,6 +350,38 @@ export class TemplateTicketTree extends React.Component {
                         </div>
                     </div>
                 </div>
+                <Modal
+                    open={this.state.open}
+                    onClose={this.handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={this.modalStyle}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            カスタムフィールドの設定
+                        </Typography>
+                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                            <table class="table mgr-tbl">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        カスタムフィールドID
+                                    </th>
+                                    <th>
+                                        カスタム項目名
+                                    </th>
+                                    <th>
+                                        値
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {this.renderCustomFieldRows()}
+                                </tbody>
+                            </table>
+                        </Typography>
+                    </Box>
+                </Modal>
             </div>
         );
     }

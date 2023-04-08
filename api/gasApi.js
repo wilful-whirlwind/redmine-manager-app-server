@@ -134,4 +134,17 @@ module.exports = class GasApi extends AbstractApi {
         }
         return res;
     }
+
+    static async getCustomFieldList() {
+        const url = store.get("gasGetListAPIEndPoint");
+        const query = {
+            "target": "custom_field",
+            "custom_field_id": "all"
+        };
+        let res = await this.callGetApi(url, {}, query);
+        if (typeof res?.customFieldList === "undefined") {
+            throw new Error("カスタムフィールド情報の取得に失敗しました。");
+        }
+        return res.customFieldList;
+    }
 }

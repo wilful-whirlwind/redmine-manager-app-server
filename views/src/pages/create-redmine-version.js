@@ -23,6 +23,7 @@ export class CreateRedmineVersion extends React.Component {
             templateTicketDateList: [],
             versionIsChecked: false,
             showTreeFlag: false,
+            customFieldList: [],
         }
         this.setInputValue = this.setInputValue.bind(this);
         this.setVersionNumber = this.setVersionNumber.bind(this);
@@ -53,6 +54,13 @@ export class CreateRedmineVersion extends React.Component {
         if (templateTicketListInfo.status === "success") {
             this.state.templateTicketTreeInfo = templateTicketListInfo.templateTicketList;
         }
+
+        const customFieldListInfo = window.electronAPI.getCustomFieldList();
+        if (customFieldListInfo.status === "success") {
+            console.log(customFieldListInfo);
+            this.state.customFieldList = customFieldListInfo.customFieldList;
+        }
+
     }
 
     setInputValue(name, value) {
@@ -359,7 +367,7 @@ export class CreateRedmineVersion extends React.Component {
     }
 
     renderTemplateTicketTree() {
-        return (<TemplateTicketTree tree={this.state.templateTicketTreeInfo} callback={this.updateTreeInfo}></TemplateTicketTree>);
+        return (<TemplateTicketTree customFieldList={this.state.customFieldList} tree={this.state.templateTicketTreeInfo} callback={this.updateTreeInfo}></TemplateTicketTree>);
     }
 
     render() {
