@@ -27,6 +27,8 @@ module.exports = class SaveConfigLogic {
             gasGetListAPIEndPoint: "",
             gasPostScheduleAPIEndPoint: "",
             gasPostScheduleAPICalenderId: "",
+            gasPostGoogleDriveAPITargetFolderId : "",
+            gasPostTestTemplateSheetAPITemplateSpreadSheetId: "",
             gasPostScheduleAPIAccessToken: "",
             gasPostScheduleAPIProjectFolderId: "",
             gasPostScheduleAPITemplateProjectFolderId: "",

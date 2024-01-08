@@ -5,6 +5,8 @@ import {postCalendarScheduleAction} from "./action/PostCalendarScheduleAction";
 import {getScheduleFromCalendarAction} from "./action/GetScheduleFromCalendarAction";
 import {deleteScheduleFromCalendarAction} from "./action/DeleteScheduleFromCalendarAction";
 import {getCustomFieldsAction} from "./action/GetCustomFieldsAction";
+import {postDriveAction} from "./action/PostDriveAction";
+import {postTestTemplateSheetAction} from "./action/PostTestTemplateSheetAction";
 
 export function frontController(params: any, httpMethod: string): any
 {
@@ -40,6 +42,12 @@ export function frontController(params: any, httpMethod: string): any
                 break;
             case "delete_event":
                 res = deleteScheduleFromCalendarAction(params);
+                break;
+            case "drive":
+                res = postDriveAction(params);
+                break;
+            case "templateTestSheet":
+                res = postTestTemplateSheetAction(params);
                 break;
             default:
         }

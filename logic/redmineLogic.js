@@ -5,6 +5,17 @@ const {prototype} = require("electron-store");
 const store = new Store();
 
 module.exports = class RedmineLogic {
+
+    async getVersionByName(versionInfo) {
+        const versionList = await RedmineApi.getVersionList(1);
+        const targetVersionName = versionInfo.getVersionName();
+        for (let i = 0; i < versionList.length; i++) {
+            if (versionList[i].name === targetVersionName) {
+                return versionList[i];
+            }
+        }
+    }
+
     async createRedmineVersionLogic(major, minor, maintenance, dueDate) {
         let versionInfo = new VersionInfo(major, minor, maintenance, dueDate);
         const targetVersionName = versionInfo.getVersionName();
@@ -113,6 +124,7 @@ module.exports = class RedmineLogic {
                         console.log("rootチケットを作成しないので終了。");
                         return [];
                     }
+                    ticketList[i].label = ticketList[i].label + versionInfo.getVersionName(" ver.", ".", "");
                     response = await RedmineApi.postTicket(ticketList[i], fixedVersionId, projectId, versionInfo);
                     ticketList[i].redmineIssueId = response.id;
                     ticketList[i].childrenIsPosted = false;
@@ -144,6 +156,7 @@ module.exports = class RedmineLogic {
                 }
                 for (let i = 0; i < currentPostTargetList.length; i++) {
                     if (currentPostTargetList[i].useFlag) {
+                        currentPostTargetList[i].label = currentPostTargetList[i].label + versionInfo.getVersionName(" ver.", ".", "");
                         response = await RedmineApi.postTicket(currentPostTargetList[i], fixedVersionId, projectId, versionInfo);
                     }
                     currentPostTargetList[i].redmineIssueId = response.id;
@@ -157,5 +170,20 @@ module.exports = class RedmineLogic {
             console.log(e)
             throw new Error("チケットの登録に失敗しました。");
         }
+    }
+
+    async createTaskTicket(data, googleDrivePath, testDocumentPath, projectId) {
+        let ticket = {
+            label: data.task_name,
+            trackerId: data.trackerId,
+            startDate: null,
+            endDate: null,
+            content: "",
+            categoryId: null,
+            redmineParentIssueId: null, //TODO:親チケット特定
+            customField_3: googleDrivePath, // TODO:カスタムフィールド設定
+            customField_4: testDocumentPath, // TODO:カスタムフィールド設定
+        };
+        return await RedmineApi.postTicket(ticket, data.version_id, projectId);
     }
 }

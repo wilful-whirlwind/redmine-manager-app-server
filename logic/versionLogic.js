@@ -1,9 +1,11 @@
 const Store = require('electron-store')
+const User = require("../entity/user");
 
 module.exports = class VersionLogic {
 
     createVersionInfoBySavedFormat(redmineVersion, redmineTicketList, redmineTicketRelationList, trackerIdList, trackerManHoursDivisionList, userList) {
         let resultFormattedVersionInfo = "";
+        let resultMatrixVersionInfo = [];
         const ticketListEachTracker = this.createTicketListEachTracker(redmineTicketList, trackerIdList);
         const manHourList = this.createMonHoursList(redmineTicketList, redmineTicketRelationList, userList, trackerManHoursDivisionList);
         const testTicketList = this.createTestTicketList(redmineTicketList, redmineTicketRelationList, userList, trackerManHoursDivisionList);
@@ -15,6 +17,13 @@ module.exports = class VersionLogic {
         resultFormattedVersionInfo += "\n" + this.createFormattedDevelopmentManHourList(manHourList, unit, separator, preString, separator2);
         resultFormattedVersionInfo += "\n" + this.createFormattedTestManHourList(testTicketList, unit, separator, preString, separator2);
         return resultFormattedVersionInfo;
+    }
+
+    createMatrixManHourList(manHourList, createFormattedTestManHourList) {
+        for (let currentTrackerId = 1; currentTrackerId < manHourList.length; currentTrackerId++) {
+
+        }
+        return [];
     }
 
     createFormattedTestManHourList(testTicketList, unit, separator, preString, separator2) {
@@ -113,18 +122,13 @@ module.exports = class VersionLogic {
         let convertedUserList = [];
         let currentRedmineTrackerId = 0;
         for (let i = 0; i < userList.length; i++) {
-            if (typeof userList[i]?.redmine_user_id === "undefined") {
+            if (typeof userList[i]?.redmineUserId === "undefined") {
                 throw new Error("ユーザのredmine情報が不正です。");
             }
-            convertedUserList[userList[i].redmine_user_id] = userList[i];
+            convertedUserList[userList[i].redmineUserId] = userList[i];
         }
-        convertedUserList[0] = {
-            "id": 0,
-            "name": "undefined",
-            "redmine_user_id": null,
-            "timecard_user_id": null,
-            "mail_address": null,
-        };
+        convertedUserList[0] = new User(0, "共通", null, null, null);
+
         let ignoreIdList = [];
         let noParentTicketCount = 0;
         for (let i = 0; i < redmineTicketList.length; i++) {
@@ -285,9 +289,9 @@ module.exports = class VersionLogic {
                         totalManHourList[currentTrackerId].manHoursList[currentCategoryId].manHoursList[currentUserId].user = {
                             id: -1,
                             name: currentUserId+"(redmine)",
-                            redmine_user_id: currentUserId,
-                            timecard_user_id: null,
-                            mail_address: "",
+                            redmineUserId: currentUserId,
+                            timecardUserId: null,
+                            mailAddress: "",
                             password_hashed: ""
                         };
                     }

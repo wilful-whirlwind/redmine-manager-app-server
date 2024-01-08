@@ -37,5 +37,14 @@ contextBridge.exposeInMainWorld('electronAPI',{
     },
     getCustomFieldList: function (data) {
         return ipcRenderer.sendSync('dialog:getCustomFieldList', data);
+    },
+    getTaskListByVersionNumber: function(data) {
+        return ipcRenderer.sendSync('dialog:getTaskListByVersionNumber', data);
+    },
+    getTrackerList: function(data) {
+        return ipcRenderer.sendSync('dialog:getTrackerList', data);
+    },
+    saveTask: function(data) {
+        return ipcRenderer.sendSync('dialog:saveTask', data);
     }
 })

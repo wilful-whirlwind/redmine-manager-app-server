@@ -11,7 +11,8 @@ const getEventListAction = require("./action/getEventListAction");
 const saveRedmineConfigAction = require("./action/saveRedmineConfigAction");
 const getCurrentEventListFromCalendarAction = require("./action/getCurrentEventListFromCalendarAction");
 const getTemplateTicketListAction = require("./action/getTemplateTicketListAction");
-
+const getTaskListByVersionNumberAction = require("./action/getTaskListByVersionNumberAction");
+const saveTaskAction = require("./action/saveTaskAction");
 let win;
 const createWindow = () => {
   const width = 1050;
@@ -127,4 +128,19 @@ ipcMain.on('dialog:getTemplateTicketList', async function(event, args) {
 ipcMain.on('dialog:getCustomFieldList', async function(event, args) {
   console.log(args);
   await getCustomFieldListAction(event);
+});
+
+ipcMain.on('dialog:getTaskListByVersionNumber', async function(event, args) {
+  console.log(args);
+  await getTaskListByVersionNumberAction(event, args);
+});
+
+ipcMain.on('dialog:getTrackerList', async function(event, args) {
+  console.log(args);
+  await getRedmineTrackerListAction(event, args);
+});
+
+ipcMain.on('dialog:saveTask', async function(event, args) {
+  console.log(args);
+  await saveTaskAction(event, args);
 });
