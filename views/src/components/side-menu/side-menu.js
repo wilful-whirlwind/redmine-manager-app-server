@@ -49,6 +49,14 @@ export class SideMenu extends React.Component {
                                         Redmine Check
                                     </Link>
                                 </li>
+                                <li>
+                                    <Link to="list-task" class="nav-link text-white rounded">
+                                        List Task
+                                    </Link>
+                                </li>
+                                <li className="invisible-list">
+                                    <Link id="edit-task" to="create-task" class="nav-link text-white rounded"></Link>
+                                </li>
                             </ul>
                         </div>
                     </li>

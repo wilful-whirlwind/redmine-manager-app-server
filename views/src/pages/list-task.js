@@ -1,79 +1,82 @@
-import React, {useRef} from "react";
+import React from "react";
 import {TitleLabel} from "../components/title-label/title-label";
-import {SectionLabel} from "../components/section-label/section-label";
-import {Message} from "../components/message/message";
-import {Link, useNavigate} from "react-router-dom";
 import {InputText} from "../components/input-text/input-text";
 
-export class ListRedmineVersion extends React.Component {
+export class ListTask extends React.Component {
     constructor(props) {
         super(props);
-        const versionList = window.electronAPI.getRedmineVersionList();
-        this.props.redmineVersionList = versionList.redmineVersionList ?? [];
         this.getInputTextValue = this.getInputTextValue.bind(this);
-        this.send = this.send.bind(this);
+        this.setInputValue = this.setInputValue.bind(this);
+        this.getTaskListByVersionNumber = this.getTaskListByVersionNumber.bind(this);
         this.bindValue = this.bindValue.bind(this);
-        this.toggleShow = this.toggleShow.bind(this);
-        this.toggleShowOpen = this.toggleShowOpen.bind(this);
-        this.toggleShowClosed = this.toggleShowClosed.bind(this);
-        let showStyleList = [];
-        for (let i = 0; i < this.props.redmineVersionList.length; i++) {
-            if (this.props.redmineVersionList[i].status === "open") {
-                showStyleList[ this.props.redmineVersionList[i].id] = "show";
-            } else {
-                showStyleList[ this.props.redmineVersionList[i].id] = "hide";
-            }
-        }
 
         this.state = {
             callback: this.props.callback,
-            showStyleList: showStyleList,
-            openIsChecked: true,
-            closedIsChecked: false
+            taskList: []
         };
     }
-
     bindValue(event) {
         event.preventDefault();
-        this.state.callback("id", event.target.href.replace("file:///", ""));
+        this.state.callback("task_id", event.target.href.replace("file:///", ""));
     }
 
     //stateのcountの値を更新するコールバック関数
     getInputTextValue( name, value ){
-        let state = {};
+        let state = [];
         state[name] = value;
-        this.setState(state) ;
-    }
-    async send() {
-        await window.electronAPI.initializeVersion(this.state);
+        this.setState(state);
     }
 
-    renderVersionTable() {
-        const rows = this.props.redmineVersionList.map((redmineVersion,index) =>
-            <tr key={redmineVersion.id} className={this.state.showStyleList[redmineVersion.id]}>
+    getVersionInfo() {
+        let versionInfo = {};
+        versionInfo.majorVersion = this.state.majorVersion;
+        versionInfo.minorVersion = this.state.minorVersion;
+        versionInfo.maintenanceVersion = this.state.maintenanceVersion;
+        return versionInfo;
+    }
+
+     getTaskListByVersionNumber() {
+        const result = window.electronAPI.getTaskListByVersionNumber(this.getVersionInfo());
+        if (
+            result?.status !== "success" ||
+            !Array.isArray(result?.taskList)
+        ) {
+            alert("タスクリストの取得に失敗しました。");
+        }
+        this.getInputTextValue("taskList", result.taskList);
+    }
+
+    renderTaskListTable() {
+        const rows = this.state.taskList.map((task) =>
+            <tr key={task.id}>
                 <td>
-                    <div>
-                        <a href={redmineVersion.id} className="nav-link text-black rounded" onClick={this.bindValue}>
-                            {redmineVersion.name}
-                        </a>
-                    </div>
+                    <a className="btn btn-link" href={task.url}>#{task.id}</a>
                 </td>
                 <td>
-                    {redmineVersion.status}
+                    {task.subject}
                 </td>
                 <td>
-                    <a class="btn btn-link" href={redmineVersion.url}>リンク</a>
+                    {task.pic}
+                </td>
+                <td>
+                    {task.deadLine}
+                </td>
+
+                <td>
+                    {task.status.name}
                 </td>
             </tr>
         );
 
         return (
-            <table className="table mgr-tbl">
+            <table className="table mgr-tbl" id="task-list">
                 <thead>
                 <tr>
-                    <th>バージョン名</th>
-                    <th></th>
-                    <th></th>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>PiC</th>
+                    <th>DeadLine</th>
+                    <th>Status</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -83,62 +86,58 @@ export class ListRedmineVersion extends React.Component {
         )
     }
 
-    toggleShow(status, flag) {
-        console.log(this.state.openIsChecked);
-        let showStyleList = [];
-        for (let i = 0; i < this.props.redmineVersionList.length; i++) {
-            if (this.props.redmineVersionList[i].status === status) {
-                showStyleList[this.props.redmineVersionList[i].id] = flag ? "show" : "hide";
-            } else {
-                showStyleList[this.props.redmineVersionList[i].id] = this.state.showStyleList[this.props.redmineVersionList[i].id];
-            }
-        }
-        this.setState({
-            showStyleList: showStyleList
-        });
-    }
-
-    toggleShowOpen() {
-        console.log(this.state.openIsChecked);
-        this.setState({
-            openIsChecked: !this.state.openIsChecked
-        });
-        this.toggleShow("open", !this.state.openIsChecked);
-    }
-
-    toggleShowClosed() {
-        this.setState({
-            closedIsChecked: !this.state.closedIsChecked
-        });
-        this.toggleShow("closed", !this.state.closedIsChecked);
+    setInputValue(name, value) {
+        let state = {};
+        state[name] = value;
+        this.setState(state);
     }
 
     renderForm() {
         return (
-            <div className="form">
-                <div className="form-check">
-                    <input className="form-check-input" type="checkbox" id="open" checked={this.state.openIsChecked} onChange={this.toggleShowOpen}/>
-                    <label className="form-check-label" htmlFor="open">
-                        open
-                    </label>
-                </div>
-                <div className="form-check">
-                    <input className="form-check-input" type="checkbox" id="closed" checked={this.state.closedIsChecked} onChange={this.toggleShowClosed}/>
-                    <label className="form-check-label" htmlFor="closed">
-                        closed
-                    </label>
-                </div>
-            </div>
+            <table className="table mgr-tbl">
+                <thead>
+                <tr>
+                    <th scope="col">Major</th>
+                    <th scope="col">Miner</th>
+                    <th scope="col">Maintenance</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <InputText id="majorVersion" callback={this.setInputValue} />
+                    </td>
+                    <td>
+                        <InputText id="minorVersion" callback={this.setInputValue} />
+                    </td>
+                    <td>
+                        <InputText id="maintenanceVersion" callback={this.setInputValue} />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="button" className="btn btn-outline-secondary" onClick={this.getTaskListByVersionNumber}>
+                            タスクリストの取得
+                        </button>
+                    </td>
+                    <td>
+                        <a href={"0"} className="btn btn-outline-secondary" onClick={this.bindValue}>
+                            タスクの追加
+                        </a>
+                    </td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
         )
     }
 
     render() {
         return (
             <div className="content-main">
-                <TitleLabel label="バージョン" />
-                <SectionLabel label="バージョン一覧" />
+                <TitleLabel label="タスク" />
                 {this.renderForm()}
-                {this.renderVersionTable()}
+                {this.renderTaskListTable()}
             </div>
         );
     }

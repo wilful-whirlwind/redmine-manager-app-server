@@ -6,6 +6,8 @@ import {Config} from "./pages/config";
 import {SideMenu} from "./components/side-menu/side-menu";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {Management} from "./pages/management";
+import {ListTask} from "./pages/list-task";
+import {CreateTask} from "./pages/create-task";
 import {Reports} from "./pages/reports";
 import {ConfigRedmine} from "./pages/config-redmine";
 import {ListRedmineVersion} from "./pages/list-redmine-version";
@@ -16,6 +18,7 @@ class Top extends React.Component {
         super(props);
         this.state = {};
         this.transitionToVersionDetailPage = this.transitionToVersionDetailPage.bind(this);
+        this.transitionToCreateTaskPage = this.transitionToCreateTaskPage.bind(this);
     }
     transitionToVersionDetailPage(name, value) {
         let state = {};
@@ -23,6 +26,14 @@ class Top extends React.Component {
         this.setState(state);
         document.getElementById("id-edit").click();
     }
+
+    transitionToCreateTaskPage(name, value) {
+        let state = {};
+        state[name] = value;
+        this.setState(state);
+        document.getElementById("edit-task").click();
+    }
+
     render() {
         return (
             <div class="top container-fluid">
@@ -39,6 +50,8 @@ class Top extends React.Component {
                                 <Route path="/create-redmine-version" element={<CreateRedmineVersion />} />
                                 <Route path="/list-redmine-version" element={<ListRedmineVersion callback={this.transitionToVersionDetailPage}/>} />
                                 <Route path="/edit-redmine-version" element={<EditRedmineVersion id={this.state.id}/>}/>
+                                <Route path="/list-task" element={<ListTask callback={this.transitionToCreateTaskPage} />} />
+                                <Route path="/create-task" element={<CreateTask id={this.state.task_id} />} />
                                 <Route path="/management" element={<Management />} />
                                 <Route path="/reports" element={<Reports />} />
                                 <Route path="/config" element={<Config />} />

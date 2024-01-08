@@ -16,6 +16,8 @@ export class Config extends React.Component {
             gasGetListAPIEndPoint: "",
             gasPostScheduleAPIEndPoint: "",
             gasPostScheduleAPICalenderId: "",
+            gasPostTestTemplateSheetAPITemplateSpreadSheetId: "",
+            gasPostGoogleDriveAPITargetFolderId: "",
             gasPostScheduleAPIAccessToken: "",
             gasPostScheduleAPIProjectFolderId: "",
             gasPostScheduleAPITemplateProjectFolderId: "",
@@ -115,6 +117,22 @@ export class Config extends React.Component {
                         </th>
                         <td>
                             <InputText id="gasPostScheduleAPICalenderId" callback={this.getInputTextValue} value={this.state.gasPostScheduleAPICalenderId} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            GASタスクフォルダ登録API<br />デフォルトフォルダID
+                        </th>
+                        <td>
+                            <InputText id="gasPostGoogleDriveAPITargetFolderId" callback={this.getInputTextValue} value={this.state.gasPostGoogleDriveAPITargetFolderId} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            GASテストテンプレート生成API<br />テンプレートシートID
+                        </th>
+                        <td>
+                            <InputText id="gasPostTestTemplateSheetAPITemplateSpreadSheetId" callback={this.getInputTextValue} value={this.state.gasPostTestTemplateSheetAPITemplateSpreadSheetId} />
                         </td>
                     </tr>
                     <tr>

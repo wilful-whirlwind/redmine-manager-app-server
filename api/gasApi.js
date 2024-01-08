@@ -147,4 +147,44 @@ module.exports = class GasApi extends AbstractApi {
         }
         return res.customFieldList;
     }
+
+    static async postGoogleDrive(taskName) {
+        const url = store.get("gasGetListAPIEndPoint");
+        const sendTargetId = store.get("gasPostGoogleDriveAPITargetFolderId") ?? "";
+        if (sendTargetId.length < 1) {
+            throw new Error("google driveのIDが未設定です。configより設定してください。")
+        }
+        const request = {
+            "target": "drive",
+            "id": sendTargetId,
+            "name": taskName
+        };
+        let res = await this.callPostApi(url, {}, request);
+        if (res?.data.status !== "created" && res?.data.status !== "not found") {
+            throw new Error("Google driveの作成に失敗しました。");
+        }
+        return res.data.id;
+    }
+
+
+    static async postTemplateTestSheet(folderId) {
+        if (folderId.length < 1) {
+            throw new Error("対象フォルダのIDが不正です。");
+        }
+        const url = store.get("gasGetListAPIEndPoint");
+        const templateSheetId = store.get("gasPostTestTemplateSheetAPITemplateSpreadSheetId");
+        if (templateSheetId.length < 1) {
+            throw new Error("GASテストテンプレート生成APIのテンプレートシートIDが未設定です。configより設定してください。");
+        }
+        const request = {
+            "target": "templateTestSheet",
+            "folderId": folderId,
+            "templateSheetId": templateSheetId
+        };
+        let res = await this.callPostApi(url, {}, request);
+        if (res?.data.status !== "created" && res?.data.status !== "not found") {
+            throw new Error("Google driveの作成に失敗しました。");
+        }
+        return res.data.id;
+    }
 }

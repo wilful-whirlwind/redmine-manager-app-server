@@ -1,11 +1,27 @@
 const VersionInfo = require("../entity/versionInfo");
 const GasApi = require("../api/gasApi");
+const User = require("../entity/user");
 
 
 module.exports = class GasLogic {
+    /**
+     * User情報を取得
+     * @return {Promise<User[]>}
+     */
     async getUserList() {
         try {
-            return await GasApi.getUserList();
+            const responseUserList = await GasApi.getUserList();
+            let userList = [];
+            for (let i = 0; i < responseUserList.length; i++) {
+                userList.push(new User(
+                    responseUserList[i].id,
+                    responseUserList[i].name,
+                    responseUserList[i].redmine_user_id,
+                    responseUserList[i].timecard_user_id,
+                    responseUserList[i].mail_address,
+                ));
+            }
+            return userList;
         } catch (e) {
             console.log(e)
             throw new Error("ユーザ情報の取得に失敗しました。");
@@ -97,5 +113,19 @@ module.exports = class GasLogic {
             console.log(e)
             throw new Error("スケジュール情報の登録に失敗しました。");
         }
+    }
+
+    async createTestDocument(data, folderId) {
+        if (!data.phase_test) {
+            return;
+        }
+        return await GasApi.postTemplateTestSheet(folderId);
+    }
+
+    async createGoogleDrive(data) {
+        if (!data.phase_plan && !data.phase_test) {
+            return;
+        }
+        return await GasApi.postGoogleDrive(data.task_name);
     }
 }
