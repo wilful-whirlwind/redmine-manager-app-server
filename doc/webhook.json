@@ -1,0 +1,607 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Redmine Manager Webhooks",
+    "description": "これは、<a href='https://github.com/wilful-whirlwind/redmine-manager'>こちらのgithub</a>にあるクライアントアプリのWebhookです。",
+    "version": "1.0"
+  },
+  "components": {
+    "schemas": {
+      "target": {
+        "name": "target",
+        "in": "query",
+        "required": true,
+        "description": "webhookの識別子です。"
+      },
+      "getUserListResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "failed"],
+            "description": "成功なら`success`, エラーメッセージを表示したい場合は`failed`を返してください。",
+            "example": "success"
+          },
+          "userList": {
+            "type": "array",
+            "description": "返却するユーザ一覧",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": "123",
+                  "description": "ユーザの識別子。`user_id`が指定された時は、その数を入れてください。"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "taro tanaka",
+                  "description": "ユーザ名"
+                },
+                "redmine_user_id": {
+                  "type": "number",
+                  "example": "1",
+                  "description": "redmineのユーザID。"
+                },
+                "mail_address": {
+                  "type": "string",
+                  "format": "email",
+                  "example": "taro.tanaka@gmail.com",
+                  "description": "ユーザのメールアドレス"
+                }
+              }
+            }
+          }
+        }
+      },
+      "getCustomFieldListResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "failed"],
+            "description": "成功なら`success`, エラーメッセージを表示したい場合は`failed`を返してください。",
+            "example": "success"
+          },
+          "customFieldList": {
+            "type": "array",
+            "description": "返却するRedmineカスタムフィールド一覧",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": "123",
+                  "description": "カスタムフィールドの識別子。`custom_field_id`が指定された時は、その数を入れてください。"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "資料置き場",
+                  "description": "カスタムフィールド名"
+                },
+                "content": {
+                  "type": "string",
+                  "example": "## 概要 <br> このチケットでは...",
+                  "description": "チケットの内容。"
+                },
+                "project_id": {
+                  "type": "number",
+                  "example": "3",
+                  "description": "redmineプロジェクトのID。"
+                },
+                "tracker_id": {
+                  "type": "number",
+                  "example": "1",
+                  "description": "redmineのトラッカーのID。"
+                },
+                "default_value": {
+                  "type": "string",
+                  "example": "なし",
+                  "description": "デフォルト値。ない場合は「なし」としてください。"
+                },
+                "limited_user_division": {
+                  "type": "number",
+                  "enum": [0,1],
+                  "example": "0",
+                  "description": "ユーザ指定カスタムフィールドか。0ならユーザ指定なし。1ならユーザ指定あり。"
+                }
+              }
+            }
+          }
+        }
+      },
+      "getTemplateTicketListResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "failed"],
+            "description": "成功なら`success`, エラーメッセージを表示したい場合は`failed`を返してください。",
+            "example": "success"
+          },
+          "calendarList": {
+            "type": "array",
+            "description": "返却するカレンダー予定一覧",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": "123",
+                  "description": "テンプレートチケットの識別子。`template_ticket_id`が指定された時は、その数を入れてください。"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "管理チケット_機能改善",
+                  "description": "テンプレートチケット名"
+                },
+                "content": {
+                  "type": "string",
+                  "example": "## 概要 <br> このチケットでは...",
+                  "description": "チケットの内容。"
+                },
+                "parent_issue_id": {
+                  "type": "number",
+                  "example": "3",
+                  "description": "親テンプレートチケットの`id`。"
+                },
+                "tracker_id": {
+                  "type": "number",
+                  "example": "1",
+                  "description": "redmineのトラッカーのID。"
+                },
+                "category_id": {
+                  "type": "number",
+                  "example": "7",
+                  "description": "redmineのカテゴリーのID。"
+                }
+              }
+            }
+          }
+        }
+      },
+      "getScheduleListResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "failed"],
+            "description": "成功なら`success`, エラーメッセージを表示したい場合は`failed`を返してください。",
+            "example": "success"
+          },
+          "calendarList": {
+            "type": "array",
+            "description": "返却するカレンダー反映済みイベント一覧",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "example": "ver.1.2.3_キックオフ",
+                  "description": "イベント名。"
+                },
+                "start": {
+                  "type": "string",
+                  "format": "datetime",
+                  "example": "2024-01-05 12:00:00",
+                  "description": "そのイベントの開始日時"
+                },
+                "end": {
+                  "type": "string",
+                  "format": "datetime",
+                  "example": "2024-01-05 13:00:00",
+                  "description": "そのイベントの終了日時"
+                },
+                "all_day_event_flag": {
+                  "type": "boolean",
+                  "example": "true",
+                  "description": "trueなら終日予定。falseなら終日予定ではない予定。"
+                }
+              }
+            }
+          }
+        }
+      },
+      "postScheduleResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "failed"],
+            "description": "成功なら`success`, エラーメッセージを表示したい場合は`failed`を返してください。",
+            "example": "success"
+          }
+        }
+      },
+      "postDriveResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["created", "failed"],
+            "description": "成功なら`created`, エラーメッセージを表示したい場合は`failed`を返してください。",
+            "example": "created"
+          },
+          "message": {
+            "type": "string",
+            "description": "failedの時に表示させたいメッセージがあれば指定してください。",
+            "example": ""
+          },
+          "id": {
+            "type": "string",
+            "description": "生成したフォルダのフォルダID",
+            "example": "dsnafergniovfvadlk-adfmnvcodsnvs112j34n43h4b5h4j4"
+          }
+        }
+      },
+      "getTemplateScheduleListResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "failed"],
+            "description": "成功なら`success`, エラーメッセージを表示したい場合は`failed`を返してください。",
+            "example": "success"
+          },
+          "scheduleList": {
+            "type": "array",
+            "description": "返却するイベント一覧",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": "123",
+                  "description": "テンプレートチケットの識別子。`template_ticket_id`が指定された時は、その数を入れてください。"
+                },
+                "use_flag": {
+                  "type": "boolean",
+                  "example": "true",
+                  "description": "現在運用があるイベントならtrue, 運用がないならfalse"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "キックオフ",
+                  "description": "イベント名"
+                },
+                "all_day_flag": {
+                  "type": "boolean",
+                  "example": "true",
+                  "description": "trueなら終日予定。falseなら終日予定ではない予定。"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {
+    "user": {
+      "get": {
+        "summary": "ユーザ",
+        "operationId": "get-user",
+        "tags": ["Webhook"],
+        "description": "`user_id`の指定に従って、ユーザ情報を返してください。",
+        "parameters": [
+          {
+            "name": "target",
+            "in": "query",
+            "required": true,
+            "description": "webhookの識別子です。`user`固定です。"
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "description": "プロジェクトメンバーのIDです。未指定の場合は全ユーザを返してください。"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功時",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUserListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "templateTicket": {
+      "get": {
+        "summary": "テンプレートチケット",
+        "operationId": "get-template-ticket",
+        "tags": ["Webhook"],
+        "description": "`template_ticket_id`の指定に従って、ユーザ情報を返してください。",
+        "parameters": [
+          {
+            "$ref": "#/components/schemas/target"
+          },
+          {
+            "name": "template_ticket_id",
+            "in": "query",
+            "description": "テンプレートチケット情報の識別子です。未指定の場合は全チケット情報を返してください。"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功時",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getTemplateTicketListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "calendar": {
+      "get": {
+        "summary": "カレンダー反映済みイベント取得",
+        "operationId": "get-calendar",
+        "tags": ["Webhook"],
+        "description": "`calendar_id`で指定されたカレンダー情報を取得します。",
+        "parameters": [
+          {
+            "name": "target",
+            "in": "query",
+            "required": true,
+            "description": "webhookの識別子です。`calendar`固定です。"
+          },
+          {
+            "name": "calendar_id",
+            "in": "query",
+            "description": "カレンダー情報の識別子です。未指定の場合は全チケット情報を返してください。"
+          },
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "description": "カレンダーから取得する期間の開始日(yyyy-mm-dd形式)"
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "description": "カレンダーから取得する期間の終了日(yyyy-mm-dd形式)"
+          },
+          {
+            "name": "version_name",
+            "required": true,
+            "in": "query",
+            "description": "対象バージョン名(PMHで登録している場合、バージョン名が予定のタイトルに付与されています。)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功時",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getScheduleListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "カレンダーにイベントを反映",
+        "operationId": "post-calendar",
+        "tags": ["Webhook"],
+        "description": "リクエストの内容をもとにカレンダーにイベントを反映させてください。",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string",
+                    "description": "webhookの識別子。`calendar`固定です。"
+                  },
+                  "calendar_id": {
+                    "type": "string",
+                    "description": "カレンダーの識別子。"
+                  },
+                  "ymd": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "そのイベントの日。yyyy-mm-dd指定"
+                  },
+                  "start": {
+                    "type": "string",
+                    "format": "time",
+                    "description": "そのイベントの開始時刻。hh:mm:ss指定。終日イベントの場合は指定されません。"
+                  },
+                  "end": {
+                    "type": "string",
+                    "format": "time",
+                    "description": "そのイベントの終了時刻。hh:mm:ss指定。終日イベントの場合は指定されません。"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功時",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postScheduleResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "カレンダー反映済みイベント削除",
+        "operationId": "delete-calendar",
+        "tags": ["Webhook"],
+        "description": "リクエストの内容をもとにカレンダーからイベントを削除してください。(このwebhookはpostで実行されます。)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string",
+                    "description": "webhookの識別子。`delete_event`固定です。"
+                  },
+                  "calendar_id": {
+                    "type": "string",
+                    "description": "カレンダーの識別子。"
+                  },
+                  "from": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "検索対象期間(from)。yyyy-mm-dd指定"
+                  },
+                  "to": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "検索対象期間(to)。yyyy-mm-dd指定"
+                  },
+                  "version_name": {
+                    "type": "string",
+                    "description": "バージョン名。(PMH経由でカレンダーにイベント登録している場合は、バージョン名がタスクに付与されています）"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功時",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postScheduleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "templateEvent": {
+      "get": {
+        "summary": "テンプレートイベント",
+        "operationId": "get-template-schedule",
+        "tags": ["Webhook"],
+        "description": "`schedule_id`の指定に従って、イベント情報を返してください。",
+        "parameters": [
+          {
+            "name": "target",
+            "in": "query",
+            "required": true,
+            "description": "webhookの識別子です。`schedule`固定です。"
+          },
+          {
+            "name": "schedule_id",
+            "in": "query",
+            "description": "テンプレートイベント情報の識別子です。未指定の場合は全イベント情報を返してください。"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功時",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getTemplateScheduleListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "customField": {
+      "get": {
+        "summary": "Redmineカスタムフィールド取得",
+        "operationId": "get-template-schedule",
+        "tags": ["Webhook"],
+        "description": "`custom_field_id`の指定に従って、Redmineのカスタムフィールド情報を返してください。",
+        "parameters": [
+          {
+            "name": "target",
+            "in": "query",
+            "required": true,
+            "description": "webhookの識別子です。`schedule`固定です。"
+          },
+          {
+            "name": "custom_field_id",
+            "in": "query",
+            "description": "カスタムフィールド情報の識別子です。未指定の場合は全カスタムフィールド情報を返してください。"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功時",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getCustomFieldListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "googleDrive": {
+      "post": {
+        "summary": "GoogleDriveのfolderIDを生成",
+        "operationId": "post-google-drive",
+        "tags": ["Webhook"],
+        "description": "リクエストで指定された場所にgoogle driveのフォルダを作成し、そのIDを返却してください。",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string",
+                    "description": "webhookの識別子。`drive`固定です。"
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "フォルダ作成場所のフォルダID。"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "フォルダ名。"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功時",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postDriveResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

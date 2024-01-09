@@ -6,8 +6,7 @@ module.exports = class GasApi extends AbstractApi {
     static async getUserList() {
         const url = store.get("gasGetListAPIEndPoint");
         const query = {
-            "target": "user",
-            "user_id": "all"
+            "target": "user"
         };
         let res = await this.callGetApi(url, {}, query);
         if (typeof res?.userList === "undefined") {
