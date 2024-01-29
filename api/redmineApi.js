@@ -4,11 +4,13 @@ const store = new Store();
 
 module.exports = class RedmineApi extends AbstractApi {
     static async postVersion(projectId, versionInfo) {
+        projectId = 43;
         const redmineUrl = store.get("redmineUri");
         return await this.callPostApi(redmineUrl + "/projects/" + projectId + "/versions.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineVersionRequest(versionInfo));
     }
 
     static async getVersionList(projectId) {
+        projectId = 43;
         const redmineUrl = store.get("redmineUri");
         const result = await this.callGetApi(redmineUrl + "/projects/" + projectId + "/versions.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineGetVersionRequestQuery());
         if (!result.hasOwnProperty("versions")) {
@@ -34,6 +36,7 @@ module.exports = class RedmineApi extends AbstractApi {
      * @return {Promise<array>}
      */
     static async getTicketsByVersion(projectId, versionId, offset= 0) {
+        projectId = 43;
         const redmineUrl = store.get("redmineUri");
         let response = await this.callGetApi(redmineUrl + "/projects/" + projectId + "/issues.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineGetTicketRequestQuery(versionId, offset));
         let tmpResult = {};
@@ -72,6 +75,7 @@ module.exports = class RedmineApi extends AbstractApi {
     }
 
     static async postTicket(ticket, fixedVersionId, projectId) {
+        projectId = 43;
         const redmineUrl = store.get("redmineUri");
         const request = RedmineApi.#generateIssuesRequest(ticket, fixedVersionId, projectId);
         const result = await this.callPostApi(redmineUrl + "/issues.json", RedmineApi.#generateHeader(), request);
@@ -126,7 +130,7 @@ module.exports = class RedmineApi extends AbstractApi {
                 subject: ticket.label,
                 tracker_id: ticket.trackerId,
                 status_id: 1, // 新規
-                priority_id: 2, // 通常
+                priority_id: 11, // 通常
                 start_date: ticket.startDate,
                 due_date: ticket.endDate,
                 description: ticket.content,

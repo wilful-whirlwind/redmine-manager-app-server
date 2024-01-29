@@ -181,8 +181,8 @@ module.exports = class RedmineLogic {
             content: "",
             categoryId: null,
             redmineParentIssueId: null, //TODO:親チケット特定
-            customField_3: googleDrivePath, // TODO:カスタムフィールド設定
-            customField_4: testDocumentPath, // TODO:カスタムフィールド設定
+            customField_14: googleDrivePath, // TODO:カスタムフィールド設定
+            customField_16: testDocumentPath, // TODO:カスタムフィールド設定
         };
         return await RedmineApi.postTicket(ticket, data.version_id, projectId);
     }

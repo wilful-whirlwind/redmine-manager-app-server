@@ -23,7 +23,7 @@ module.exports = class VersionInfo {
      * @param suffix
      * @return string 生成されたバージョン名
      */
-    getVersionName(prefix = "ver.", separator = ".", suffix = "_POSサーバー") {
+    getVersionName(prefix = "ver.", separator = ".", suffix = "_MICEソリューションズ") {
         const joinedVersion = [this.major, this.minor, this.maintenance].join(separator);
         return prefix + joinedVersion + suffix;
     }
