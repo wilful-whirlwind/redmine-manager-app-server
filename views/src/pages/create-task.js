@@ -75,7 +75,7 @@ export class CreateTask extends AbstractPage {
             return (<option value={tracker.id} selected={this.state.createInfo.tracker_id === tracker.id}>{tracker.name}</option>);
         }.bind(this));
 
-        return (<select name="tracker_id" className="form-select" onClick={this.saveInfo("createInfo", "")}>{options}</select>);
+        return (<select name="tracker_id" className="form-select" onChange={this.saveInfo("createInfo", "")}>{options}</select>);
     }
 
     renderVersionSelectBox() {
@@ -83,7 +83,7 @@ export class CreateTask extends AbstractPage {
             return (<option value={version.id} selected={this.state.createInfo.version_id === version.id}>{version.name}</option>);
         }.bind(this));
 
-        return (<select name="version_id" className="form-select" onClick={this.saveInfo("createInfo", "")}>{options}</select>);
+        return (<select name="version_id" className="form-select" onChange={this.saveInfo("createInfo", "")}>{options}</select>);
     }
 
     toggleCheckBox(event) {
