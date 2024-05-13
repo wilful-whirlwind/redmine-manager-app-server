@@ -1,5 +1,6 @@
 const RedmineLogic = require("../logic/redmineLogic");
 const SaveConfigLogic = require("../logic/saveConfigLogic");
+const createResponse = require("./createResponse");
 
 module.exports = async function(event, data) {
     const redmineLogic = new RedmineLogic();
@@ -8,16 +9,17 @@ module.exports = async function(event, data) {
         const configLogic = new SaveConfigLogic();
         const trackerActiveList = await configLogic.getRedmineTrackerConfig();
         const trackerMonHoursDivisionList = configLogic.getRedmineTrackerManHoursDivisionConfig();
-        event.returnValue = {
+        return createResponse(event, {
             "status": "success",
             "redmineTrackerList": redmineTrackerList,
             "trackerActiveList": trackerActiveList,
             "trackerMonHoursDivisionList": trackerMonHoursDivisionList
-        };
+        })
     } catch (e) {
-        event.returnValue = {
-            "status": "failed"
-        }
+        return createResponse(event, {
+            "status": "failed",
+            "message": e.message
+        });
     }
 
 }

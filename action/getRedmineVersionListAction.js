@@ -1,17 +1,18 @@
 const RedmineLogic = require("../logic/redmineLogic");
+const createResponse = require("./createResponse");
 
 module.exports = async function(event, data) {
     const redmineLogic = new RedmineLogic();
     try {
         const redmineVersionList = await redmineLogic.getVersionList();
-        event.returnValue = {
+        return createResponse(event, {
             "status": "success",
             "redmineVersionList": redmineVersionList
-        };
+        })
     } catch (e) {
-        event.returnValue = {
+        return createResponse(event, {
             "status": "failed",
-            "redmineVersionList": []
-        };
+            "message": e.message
+        });
     }
 }

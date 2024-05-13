@@ -3,6 +3,7 @@ const GasLogic = require("../logic/gasLogic");
 const Store = require('electron-store')
 const {app} = require("electron");
 const VersionInfo = require("../entity/versionInfo");
+const createResponse = require("./createResponse");
 const store = new Store();
 
 
@@ -40,9 +41,9 @@ module.exports = async function(event, data) {
 
         console.log(resForGas);
         store.set("sendMessage","登録しました");
-        event.returnValue = "登録しました。";
+        return createResponse(event, "登録しました。");
     } catch (e) {
         store.set("sendMessage","登録に失敗しました。同一バージョンが生成されていないか確認してください。");
-        event.returnValue = "登録に失敗しました。同一バージョンが生成されていないか確認してください。";
+        return createResponse(event, "登録に失敗しました。同一バージョンが生成されていないか確認してください。");
     }
 }

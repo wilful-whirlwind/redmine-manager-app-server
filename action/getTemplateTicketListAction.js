@@ -1,5 +1,6 @@
 const GasLogic = require("../logic/gasLogic");
 const TemplateTicketLogic = require("../logic/templateTicketLogic");
+const createResponse = require("./createResponse");
 
 
 module.exports = async function(event, data) {
@@ -8,14 +9,14 @@ module.exports = async function(event, data) {
     try {
         const templateTicketList = await gasLogic.getTemplateTicketList();
         const getTemplateTicketTreeInfo = templateTicketLogic.convertTreeListFromTemplateTicketList(templateTicketList);
-        event.returnValue = {
+        return createResponse(event, {
             "status": "success",
             "templateTicketList": getTemplateTicketTreeInfo,
-        };
+        })
     } catch(e) {
-        event.returnValue = {
+        return createResponse(event, {
             "status": "failed",
             "message": e.message
-        };
+        });
     }
 }

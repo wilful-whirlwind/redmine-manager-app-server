@@ -1,5 +1,6 @@
 const GasLogic = require("../logic/gasLogic");
 const RedmineLogic = require("../logic/redmineLogic");
+const createResponse = require("./createResponse");
 
 /**
  *
@@ -39,9 +40,9 @@ module.exports = async function(event, data) {
     } catch(e) {
         //TODO ロールバック処理
 
-        event.returnValue = {
+        return createResponse(event, {
             "status": "failed",
             "message": e.message
-        };
+        });
     }
 }
