@@ -1,6 +1,5 @@
 const axios = require('axios');
-const Store = require('electron-store')
-const store = new Store();
+const store = require('../util/storeUtil')
 
 module.exports = class AbstractApi {
 

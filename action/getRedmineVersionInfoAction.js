@@ -1,9 +1,8 @@
 const RedmineLogic = require("../logic/redmineLogic");
 const VersionLogic = require("../logic/versionLogic");
 const GasLogic = require("../logic/gasLogic")
-const Store = require("electron-store");
 const createResponse = require("./createResponse");
-const store = new Store();
+const store = require('../util/storeUtil')
 
 
 module.exports = async function(event, versionId) {

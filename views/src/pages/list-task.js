@@ -133,6 +133,7 @@ export class ListTask extends React.Component {
     }
 
     render() {
+        console.log(window.navigator.userAgent);
         return (
             <div className="content-main">
                 <TitleLabel label="タスク" />

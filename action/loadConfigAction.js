@@ -1,4 +1,3 @@
-const {app} = require("electron");
 const SaveConfigLogic = require("../logic/saveConfigLogic");
 const createResponse = require("./createResponse");
 

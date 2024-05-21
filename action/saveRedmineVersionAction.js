@@ -1,10 +1,8 @@
 const RedmineLogic = require("../logic/redmineLogic");
 const GasLogic = require("../logic/gasLogic");
-const Store = require('electron-store')
-const {app} = require("electron");
 const VersionInfo = require("../entity/versionInfo");
 const createResponse = require("./createResponse");
-const store = new Store();
+const store = require('../util/storeUtil')
 
 
 function validate(data) {

@@ -1,8 +1,6 @@
 const RedmineApi = require("../api/redmineApi");
 const VersionInfo = require("../entity/versionInfo");
-const Store = require('electron-store')
-const {prototype} = require("electron-store");
-const store = new Store();
+const store = require('../util/storeUtil')
 
 module.exports = class RedmineLogic {
 
