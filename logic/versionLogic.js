@@ -1,4 +1,3 @@
-const Store = require('electron-store')
 const User = require("../entity/user");
 
 module.exports = class VersionLogic {

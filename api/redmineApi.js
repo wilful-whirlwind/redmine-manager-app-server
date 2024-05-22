@@ -1,6 +1,5 @@
 const AbstractApi = require("./abstractApi");
-const Store = require('electron-store')
-const store = new Store();
+const store = require('../util/storeUtil')
 
 module.exports = class RedmineApi extends AbstractApi {
     static async postVersion(projectId, versionInfo) {

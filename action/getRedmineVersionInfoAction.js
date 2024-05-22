@@ -1,8 +1,8 @@
 const RedmineLogic = require("../logic/redmineLogic");
 const VersionLogic = require("../logic/versionLogic");
 const GasLogic = require("../logic/gasLogic")
-const Store = require("electron-store");
-const store = new Store();
+const createResponse = require("./createResponse");
+const store = require('../util/storeUtil')
 
 
 module.exports = async function(event, versionId) {
@@ -17,15 +17,15 @@ module.exports = async function(event, versionId) {
         const trackerManHoursDivisionList = store.get("man-hours_division") ?? [];
         const userList = await gasLogic.getUserList();
         const versionInfo = versionLogic.createVersionInfoBySavedFormat(redmineVersion, redmineTicketList, redmineTicketRelationList, trackerIdList, trackerManHoursDivisionList, userList);
-        event.returnValue = {
+        return createResponse(event, {
             "status": "success",
             "versionInfo": versionInfo,
-        };
+        })
     } catch (e) {
-        event.returnValue = {
+        return createResponse(event, {
             "status": "failed",
-            "message": e.message,
-        };
+            "message": e.message
+        });
     }
 
 }

@@ -1,5 +1,6 @@
 const RedmineLogic = require("../logic/redmineLogic");
 const VersionInfo = require("../entity/versionInfo");
+const createResponse = require("./createResponse");
 
 module.exports = async function(event, data) {
     const redmineLogic = new RedmineLogic();
@@ -11,14 +12,14 @@ module.exports = async function(event, data) {
             taskList[i].pic = "A";
             taskList[i].deadLine = "";
         }
-        event.returnValue = {
+        return createResponse(event, {
+            "status": "success",
             "taskList": taskList,
-            "status": "success"
-        };
+        })
     } catch {
-        event.returnValue = {
-            "taskList": [],
-            "status": "failed"
-        };
+        return createResponse(event, {
+            "status": "failed",
+            "message": e.message
+        });
     }
 }
