@@ -13,8 +13,8 @@ module.exports = async function(event, versionId) {
         const redmineVersion = await redmineLogic.getVersion(versionId);
         const redmineTicketList = await redmineLogic.getTicketByVersion(versionId, 1);
         const redmineTicketRelationList = await redmineLogic.getTicketRelationByVersion(redmineTicketList);
-        const trackerIdList = store.get("tracker_id") ?? [];
-        const trackerManHoursDivisionList = store.get("man-hours_division") ?? [];
+        const trackerIdList = await store.get("tracker_id") ?? [];
+        const trackerManHoursDivisionList = await store.get("man-hours_division") ?? [];
         const userList = await gasLogic.getUserList();
         const versionInfo = versionLogic.createVersionInfoBySavedFormat(redmineVersion, redmineTicketList, redmineTicketRelationList, trackerIdList, trackerManHoursDivisionList, userList);
         return createResponse(event, {

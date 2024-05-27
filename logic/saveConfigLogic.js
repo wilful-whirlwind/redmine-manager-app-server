@@ -17,7 +17,7 @@ module.exports = class SaveConfigLogic {
         return true;
     }
 
-    getBasicConfig() {
+    async getBasicConfig() {
         let configInfo = {
             basicAuthUserId: "",
             basicAuthPassWord: "",
@@ -39,16 +39,16 @@ module.exports = class SaveConfigLogic {
         };
 
         for (const property in configInfo) {
-            configInfo[property] = store.get(property) ?? "";
+            configInfo[property] = await store.get(property) ?? "";
         }
         return configInfo;
     }
 
-    getRedmineTrackerConfig() {
-        return store.get("tracker_id") ?? {};
+    async getRedmineTrackerConfig() {
+        return await store.get("tracker_id") ?? {};
     }
 
-    getRedmineTrackerManHoursDivisionConfig() {
-        return store.get("man-hours_division") ?? [];
+    async getRedmineTrackerManHoursDivisionConfig() {
+        return await store.get("man-hours_division") ?? [];
     }
 }

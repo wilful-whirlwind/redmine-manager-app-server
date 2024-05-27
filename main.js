@@ -88,7 +88,7 @@ ipcMain.on('sendMessage', function(event, args) {
 
 ipcMain.on('dialog:loadConfig', async function(event, args) {
   console.log(args);
-  loadConfigAction(event, args);
+  await loadConfigAction(event, args);
 });
 
 ipcMain.on('dialog:getRedmineTrackerConfigList', async function(event, args) {

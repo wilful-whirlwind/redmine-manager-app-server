@@ -8,7 +8,7 @@ module.exports = async function(event, data) {
         const redmineTrackerList = await redmineLogic.getTrackerList();
         const configLogic = new SaveConfigLogic();
         const trackerActiveList = await configLogic.getRedmineTrackerConfig();
-        const trackerMonHoursDivisionList = configLogic.getRedmineTrackerManHoursDivisionConfig();
+        const trackerMonHoursDivisionList = await configLogic.getRedmineTrackerManHoursDivisionConfig();
         return createResponse(event, {
             "status": "success",
             "redmineTrackerList": redmineTrackerList,

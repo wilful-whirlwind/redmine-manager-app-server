@@ -3,13 +3,13 @@ const store = require('../util/storeUtil')
 
 module.exports = class RedmineApi extends AbstractApi {
     static async postVersion(projectId, versionInfo) {
-        const redmineUrl = store.get("redmineUri");
-        return await this.callPostApi(redmineUrl + "/projects/" + projectId + "/versions.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineVersionRequest(versionInfo));
+        const redmineUrl = await store.get("redmineUri");
+        return await this.callPostApi(redmineUrl + "/projects/" + projectId + "/versions.json", await RedmineApi.#generateHeader(), RedmineApi.#createRedmineVersionRequest(versionInfo));
     }
 
     static async getVersionList(projectId) {
-        const redmineUrl = store.get("redmineUri");
-        const result = await this.callGetApi(redmineUrl + "/projects/" + projectId + "/versions.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineGetVersionRequestQuery());
+        const redmineUrl = await store.get("redmineUri");
+        const result = await this.callGetApi(redmineUrl + "/projects/" + projectId + "/versions.json", await RedmineApi.#generateHeader(), RedmineApi.#createRedmineGetVersionRequestQuery());
         if (!result.hasOwnProperty("versions")) {
             throw new Error("チケット情報の取得に失敗しました。")
         }
@@ -17,8 +17,8 @@ module.exports = class RedmineApi extends AbstractApi {
     }
 
     static async getVersion(versionId) {
-        const redmineUrl = store.get("redmineUri");
-        const result = await this.callGetApi(redmineUrl + "/versions/" + versionId + ".json", RedmineApi.#generateHeader(), {});
+        const redmineUrl = await store.get("redmineUri");
+        const result = await this.callGetApi(redmineUrl + "/versions/" + versionId + ".json", await RedmineApi.#generateHeader(), {});
         if (!result.hasOwnProperty("version")) {
             throw new Error("チケット情報の取得に失敗しました。")
         }
@@ -33,8 +33,8 @@ module.exports = class RedmineApi extends AbstractApi {
      * @return {Promise<array>}
      */
     static async getTicketsByVersion(projectId, versionId, offset= 0) {
-        const redmineUrl = store.get("redmineUri");
-        let response = await this.callGetApi(redmineUrl + "/projects/" + projectId + "/issues.json", RedmineApi.#generateHeader(), RedmineApi.#createRedmineGetTicketRequestQuery(versionId, offset));
+        const redmineUrl = await store.get("redmineUri");
+        let response = await this.callGetApi(redmineUrl + "/projects/" + projectId + "/issues.json", await RedmineApi.#generateHeader(), RedmineApi.#createRedmineGetTicketRequestQuery(versionId, offset));
         let tmpResult = {};
         if (!response.hasOwnProperty("issues")) {
             throw new Error("チケット情報の取得に失敗しました。")
@@ -53,8 +53,8 @@ module.exports = class RedmineApi extends AbstractApi {
      * @return {Promise<array>}
      */
     static async getTicketRelations(issueId) {
-        const redmineUrl = store.get("redmineUri");
-        const result = await this.callGetApi(redmineUrl + "/issues/" + issueId + "/relations.json", RedmineApi.#generateHeader(), {});
+        const redmineUrl = await store.get("redmineUri");
+        const result = await this.callGetApi(redmineUrl + "/issues/" + issueId + "/relations.json", await RedmineApi.#generateHeader(), {});
         if (!result.hasOwnProperty("relations")) {
             throw new Error("チケットリレーション情報の取得に失敗しました。")
         }
@@ -62,8 +62,8 @@ module.exports = class RedmineApi extends AbstractApi {
     }
 
     static async getTrackerList() {
-        const redmineUrl = store.get("redmineUri");
-        const result = await this.callGetApi(redmineUrl + "/trackers.json", RedmineApi.#generateHeader(), {});
+        const redmineUrl = await store.get("redmineUri");
+        const result = await this.callGetApi(redmineUrl + "/trackers.json", await RedmineApi.#generateHeader(), {});
         if (!result.hasOwnProperty("trackers")) {
             throw new Error("トラッカー情報の取得に失敗しました。")
         }
@@ -71,9 +71,9 @@ module.exports = class RedmineApi extends AbstractApi {
     }
 
     static async postTicket(ticket, fixedVersionId, projectId) {
-        const redmineUrl = store.get("redmineUri");
+        const redmineUrl = await store.get("redmineUri");
         const request = RedmineApi.#generateIssuesRequest(ticket, fixedVersionId, projectId);
-        const result = await this.callPostApi(redmineUrl + "/issues.json", RedmineApi.#generateHeader(), request);
+        const result = await this.callPostApi(redmineUrl + "/issues.json", await RedmineApi.#generateHeader(), request);
         if (!result.hasOwnProperty("data")) {
             throw new Error("チケットの登録に失敗しました。")
         }
@@ -83,8 +83,8 @@ module.exports = class RedmineApi extends AbstractApi {
         return result.data.issue;
     }
 
-    static #generateHeader() {
-        const accessToken = store.get("redmineAccessToken");
+    static async #generateHeader() {
+        const accessToken = await store.get("redmineAccessToken");
         return {
             "X-Redmine-API-Key": accessToken
         }

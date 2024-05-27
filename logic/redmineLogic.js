@@ -51,7 +51,7 @@ module.exports = class RedmineLogic {
     async getVersionList() {
         try {
             const versionList = await RedmineApi.getVersionList(1);
-            const redmineUri = store.get("redmineUri");
+            const redmineUri = await store.get("redmineUri");
             for (let i = 0; i < versionList.length; i++) {
                 versionList[i].url = redmineUri + "/versions/" + versionList[i].id;
             }

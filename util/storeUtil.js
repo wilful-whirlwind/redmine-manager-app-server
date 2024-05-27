@@ -1,5 +1,6 @@
 const Store = require("electron-store");
 const ExecuteStyle = require("../env/env");
+const {get} = require("axios");
 const store = new Store();
 
 const saveToStore = function (key, data) {
@@ -10,12 +11,13 @@ const saveToStore = function (key, data) {
     }
 }
 
-const getFromStore = function(key) {
+const getFromStore = async function(key) {
     const style = new ExecuteStyle();
     if (style.isApp()) {
-        return store.get(key);
+        return await store.get(key);
     } else if(style.isWeb()) {
-        return "";
+        const result = await get('http://localhost:8080/config?key=' + key);
+        return result.data.result.Value;
     }
 }
 

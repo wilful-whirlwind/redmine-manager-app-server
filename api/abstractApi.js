@@ -1,5 +1,6 @@
 const axios = require('axios');
 const store = require('../util/storeUtil')
+const {Agent} = require("https");
 
 module.exports = class AbstractApi {
 
@@ -12,7 +13,7 @@ module.exports = class AbstractApi {
      */
     static async callPostApi(uri, headers, request) {
         let response = null;
-        headers = this.setBasicAuth(headers);
+        headers = await this.setBasicAuth(headers);
         try {
             response = await axios.post(uri, request, {headers: headers});
         } catch (e) {
@@ -31,9 +32,12 @@ module.exports = class AbstractApi {
      */
     static async callGetApi(uri, headers, query) {
         let response = null;
-        headers = this.setBasicAuth(headers);
+        headers = await this.setBasicAuth(headers);
+        const agent = new Agent({
+            rejectUnauthorized: false
+        });
         try {
-            response = await axios.get(uri, {params: query, headers: headers});
+            response = await axios.get(uri, {params: query, headers: headers, httpsAgent: agent});
             console.log(response);
             return response.data;
         } catch (e) {
@@ -41,9 +45,9 @@ module.exports = class AbstractApi {
         }
     }
 
-    static setBasicAuth(headers) {
-        const basicAuthUserId = store.get("basicAuthUserId") ?? "";
-        const basicAuthPassWord = store.get("basicAuthPassWord") ?? "";
+    static async setBasicAuth(headers) {
+        const basicAuthUserId = await store.get("basicAuthUserId") ?? "";
+        const basicAuthPassWord = await store.get("basicAuthPassWord") ?? "";
         if (basicAuthUserId.length > 0 && basicAuthPassWord.length > 0) {
             if (typeof headers === "undefined" || headers === null) {
                 headers = {}

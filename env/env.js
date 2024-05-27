@@ -1,8 +1,8 @@
 module.exports = class ExecuteStyle {
 
     constructor() {
-        this.style = "APP";
-        // this.style = "WEB";
+        // this.style = "APP";
+        this.style = "WEB";
     }
 
     isApp() {

@@ -3,7 +3,7 @@ const store = require('../util/storeUtil')
 
 module.exports = class GasApi extends AbstractApi {
     static async getUserList() {
-        const url = store.get("gasGetListAPIEndPoint");
+        const url = await store.get("gasGetListAPIEndPoint");
         const query = {
             "target": "user"
         };
@@ -15,7 +15,7 @@ module.exports = class GasApi extends AbstractApi {
     }
 
     static async getTemplateTicketList() {
-        const url = store.get("gasGetListAPIEndPoint");
+        const url = await store.get("gasGetListAPIEndPoint");
         const query = {
             "target": "template_ticket",
             "template_ticket_id": "all"
@@ -28,8 +28,8 @@ module.exports = class GasApi extends AbstractApi {
     }
 
     static async getScheduleListFromGoogleCalendar(from, to, versionName) {
-        const url = store.get("gasGetListAPIEndPoint");
-        const calendarId = store.get("gasPostScheduleAPICalenderId");
+        const url = await store.get("gasGetListAPIEndPoint");
+        const calendarId = await store.get("gasPostScheduleAPICalenderId");
         const query = {
             "target": "calendar",
             "calendar_id": calendarId,
@@ -46,7 +46,7 @@ module.exports = class GasApi extends AbstractApi {
     }
 
     static async getScheduleList() {
-        const url = store.get("gasGetListAPIEndPoint");
+        const url = await store.get("gasGetListAPIEndPoint");
         const query = {
             "target": "schedule",
             "schedule_id": "all"
@@ -66,8 +66,8 @@ module.exports = class GasApi extends AbstractApi {
      * @return {Promise<null>}
      */
     static async postGoogleCalendarScheduleForAllDays(ymd, title) {
-        const url = store.get("gasPostScheduleAPIEndPoint");
-        const calendarId = store.get("gasPostScheduleAPICalenderId");
+        const url = await store.get("gasPostScheduleAPIEndPoint");
+        const calendarId = await store.get("gasPostScheduleAPICalenderId");
         const request = {
             "target": "calendar",
             "ymd": ymd,
@@ -90,8 +90,8 @@ module.exports = class GasApi extends AbstractApi {
      * @return {Promise<null>}
      */
     static async postGoogleCalendarScheduleForMeeting(ymd, title, start, end) {
-        const url = store.get("gasPostScheduleAPIEndPoint");
-        const calendarId = store.get("gasPostScheduleAPICalenderId");
+        const url = await store.get("gasPostScheduleAPIEndPoint");
+        const calendarId = await store.get("gasPostScheduleAPICalenderId");
         const request = {
             "target": "calendar",
             "ymd": ymd,
@@ -116,8 +116,8 @@ module.exports = class GasApi extends AbstractApi {
      * @return {Promise<null>}
      */
     static async deleteGoogleCalendarSchedule(from, to, title, versionName) {
-        const url = store.get("gasPostScheduleAPIEndPoint");
-        const calendarId = store.get("gasPostScheduleAPICalenderId");
+        const url = await store.get("gasPostScheduleAPIEndPoint");
+        const calendarId = await store.get("gasPostScheduleAPICalenderId");
         const request = {
             "target": "delete_event",
             "calendar_id": calendarId,
@@ -134,7 +134,7 @@ module.exports = class GasApi extends AbstractApi {
     }
 
     static async getCustomFieldList() {
-        const url = store.get("gasGetListAPIEndPoint");
+        const url = await store.get("gasGetListAPIEndPoint");
         const query = {
             "target": "custom_field",
             "custom_field_id": "all"
@@ -147,8 +147,8 @@ module.exports = class GasApi extends AbstractApi {
     }
 
     static async postGoogleDrive(taskName) {
-        const url = store.get("gasGetListAPIEndPoint");
-        const sendTargetId = store.get("gasPostGoogleDriveAPITargetFolderId") ?? "";
+        const url = await store.get("gasGetListAPIEndPoint");
+        const sendTargetId = await store.get("gasPostGoogleDriveAPITargetFolderId") ?? "";
         if (sendTargetId.length < 1) {
             throw new Error("google driveのIDが未設定です。configより設定してください。")
         }
@@ -169,8 +169,8 @@ module.exports = class GasApi extends AbstractApi {
         if (folderId.length < 1) {
             throw new Error("対象フォルダのIDが不正です。");
         }
-        const url = store.get("gasGetListAPIEndPoint");
-        const templateSheetId = store.get("gasPostTestTemplateSheetAPITemplateSpreadSheetId");
+        const url = await store.get("gasGetListAPIEndPoint");
+        const templateSheetId = await store.get("gasPostTestTemplateSheetAPITemplateSpreadSheetId");
         if (templateSheetId.length < 1) {
             throw new Error("GASテストテンプレート生成APIのテンプレートシートIDが未設定です。configより設定してください。");
         }

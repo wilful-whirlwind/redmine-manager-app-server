@@ -1,7 +1,7 @@
 const SaveConfigLogic = require("../logic/saveConfigLogic");
 const createResponse = require("./createResponse");
 
-module.exports = function(event, data) {
+module.exports = async function(event, data) {
     const logic = new SaveConfigLogic();
-    return createResponse(event, logic.getBasicConfig());
+    return createResponse(event, await logic.getBasicConfig());
 }
