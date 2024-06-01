@@ -6,6 +6,12 @@ const saveConfigAction = require("./action/saveConfigAction");
 
 // server.js
 const http = require('http');
+const https = require('https');
+const fs = require('fs');
+const options = {
+    key: fs.readFileSync('./localhttps_key.pem'),
+    cert: fs.readFileSync('./localhttps_cert.pem')
+}
 const router = require('./router'); // routerを読み込み
 
 const defaultHeader = {
@@ -46,7 +52,7 @@ router.post('/config', async (req, res) => { // httpメソッドが「POST」、
 });
 
 
-const server = http.createServer(async (req, res) => {
+const server = https.createServer(options, async (req, res) => {
     await router.bodyParser(req); // POSTパラメータ対応
     const handler = router.route(req); // 登録済みの関数を取得(ルーティング)
     handler(req, res); // 関数の実行
