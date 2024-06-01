@@ -1,6 +1,8 @@
 const getRedmineTrackerListAction = require("./action/getRedmineTrackerListAction");
 const getRedmineVersionListAction = require("./action/getRedmineVersionListAction");
 const authAction = require("./action/authAction");
+const loadConfigAction = require("./action/loadConfigAction");
+const saveConfigAction = require("./action/saveConfigAction");
 
 // server.js
 const http = require('http');
@@ -27,9 +29,22 @@ router.get('/versions', async (req, res) => { // httpメソッドが「GET」、
 
 router.post('/auth', async (req, res) => { // httpメソッドが「POST」、パスが「/」を登録
     res.writeHead(200,  defaultHeader);
-    const result = await authAction(req, res);
+    const result = await authAction(req, req.body);
     res.end(JSON.stringify(result));
 });
+
+router.get('/config', async (req, res) => { // httpメソッドが「POST」、パスが「/」を登録
+    res.writeHead(200,  defaultHeader);
+    const result = await loadConfigAction(req, res);
+    res.end(JSON.stringify(result));
+});
+
+router.post('/config', async (req, res) => { // httpメソッドが「POST」、パスが「/」を登録
+    res.writeHead(200,  defaultHeader);
+    const result = await saveConfigAction(req, req.body);
+    res.end(JSON.stringify(result));
+});
+
 
 const server = http.createServer(async (req, res) => {
     await router.bodyParser(req); // POSTパラメータ対応

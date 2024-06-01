@@ -21,6 +21,7 @@
     "electron": "^21.3.0"
   },
   "dependencies": {
+    "argon2": "^0.40.3",
     "axios": "^0.27.2",
     "electron-store": "^8.1.0",
     "http": "^0.0.1-security"

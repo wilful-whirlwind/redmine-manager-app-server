@@ -1,10 +1,15 @@
 const store = require('../util/storeUtil')
+const ExecuteStyle = require("../env/env");
 
 module.exports = class SaveConfigLogic {
     async saveConfig(configInfo) {
         console.log(configInfo);
-        for (const property in configInfo) {
-            store.set(property, configInfo[property]);
+        const executeStyle = new ExecuteStyle();
+        for (let property in configInfo) {
+            if (['gasGetListAPIEndPoint', 'gasPostScheduleAPIEndPoint'].includes(property)) {
+                property = property + executeStyle.style
+            }
+            await store.set(property, configInfo[property]);
         }
         return true;
     }
@@ -12,7 +17,7 @@ module.exports = class SaveConfigLogic {
     async saveRedmineConfig(configInfo) {
         console.log(configInfo);
         for (const property in configInfo) {
-            store.set(property, configInfo[property]);
+            await store.set(property, configInfo[property]);
         }
         return true;
     }
@@ -37,8 +42,11 @@ module.exports = class SaveConfigLogic {
             slackMailAddressForNoticeToCS: "",
             platformAPIAccessToken: ""
         };
-
-        for (const property in configInfo) {
+        const executeStyle = new ExecuteStyle();
+        for (let property in configInfo) {
+            if (['gasGetListAPIEndPoint', 'gasPostScheduleAPIEndPoint'].includes(property)) {
+                property = property + executeStyle.style
+            }
             configInfo[property] = await store.get(property) ?? "";
         }
         return configInfo;

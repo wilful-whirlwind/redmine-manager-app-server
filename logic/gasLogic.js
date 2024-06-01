@@ -1,5 +1,5 @@
 const VersionInfo = require("../entity/versionInfo");
-const GasApi = require("../api/gasApi");
+const DataApi = require("../api/dataApi");
 const User = require("../entity/user");
 
 
@@ -10,15 +10,17 @@ module.exports = class GasLogic {
      */
     async getUserList() {
         try {
-            const responseUserList = await GasApi.getUserList();
+            const responseUserList = await DataApi.getUserList();
             let userList = [];
             for (let i = 0; i < responseUserList.length; i++) {
+                console.log(responseUserList[i]);
                 userList.push(new User(
-                    responseUserList[i].id,
-                    responseUserList[i].name,
-                    responseUserList[i].redmine_user_id,
-                    responseUserList[i].timecard_user_id,
-                    responseUserList[i].mail_address,
+                    responseUserList[i].Id,
+                    responseUserList[i].Name,
+                    "",
+                    "",
+                    responseUserList[i].MailAddress,
+                    responseUserList[i].PasswordHash,
                 ));
             }
             return userList;
@@ -30,7 +32,7 @@ module.exports = class GasLogic {
 
     async getTemplateTicketList() {
         try {
-            return await GasApi.getTemplateTicketList();
+            return await DataApi.getTemplateTicketList();
         } catch (e) {
             console.log(e)
             throw new Error("テンプレートチケット情報の取得に失敗しました。");
@@ -39,7 +41,7 @@ module.exports = class GasLogic {
 
     async getCustomFieldList() {
         try {
-            return await GasApi.getCustomFieldList();
+            return await DataApi.getCustomFieldList();
         } catch (e) {
             console.log(e)
             throw new Error("カスタムフィールド情報の取得に失敗しました。");
@@ -49,7 +51,7 @@ module.exports = class GasLogic {
 
     async getScheduleListFromEventMaster() {
         try {
-            return await GasApi.getScheduleList();
+            return await DataApi.getScheduleList();
         } catch (e) {
             console.log(e)
             throw new Error("スケジュール情報の取得に失敗しました。");
@@ -58,7 +60,7 @@ module.exports = class GasLogic {
 
     async getScheduleListFromGoogleCalendar(versionName) {
         try {
-            return await GasApi.getScheduleListFromGoogleCalendar("2022-10-01", "2025-12-31", versionName);
+            return await DataApi.getScheduleListFromGoogleCalendar("2022-10-01", "2025-12-31", versionName);
         } catch (e) {
             console.log(e)
             throw new Error("スケジュール情報の取得に失敗しました。");
@@ -94,19 +96,19 @@ module.exports = class GasLogic {
                 if (typeof currentEvent?.ymd === "undefined") {
                     continue;
                 }
-                await GasApi.deleteGoogleCalendarSchedule("2022-10-01", "2025-12-31", currentEvent.name, versionName);
+                await DataApi.deleteGoogleCalendarSchedule("2022-10-01", "2025-12-31", currentEvent.name, versionName);
                 currentEvent.name = versionName + currentEvent.name;
                 if (
                     typeof currentEvent?.from === "undefined" &&
                     typeof currentEvent?.to === "undefined"
                 ) {
-                    await GasApi.postGoogleCalendarScheduleForAllDays(currentEvent.ymd, currentEvent.name);
+                    await DataApi.postGoogleCalendarScheduleForAllDays(currentEvent.ymd, currentEvent.name);
                 }
                 if (
                     typeof currentEvent?.from === "string" &&
                     typeof currentEvent?.to === "string"
                 ) {
-                    await GasApi.postGoogleCalendarScheduleForMeeting(currentEvent.ymd, currentEvent.name, currentEvent.from, currentEvent.to);
+                    await DataApi.postGoogleCalendarScheduleForMeeting(currentEvent.ymd, currentEvent.name, currentEvent.from, currentEvent.to);
                 }
             }
         } catch (e) {
@@ -119,13 +121,13 @@ module.exports = class GasLogic {
         if (!data.phase_test) {
             return;
         }
-        return await GasApi.postTemplateTestSheet(folderId);
+        return await DataApi.postTemplateTestSheet(folderId);
     }
 
     async createGoogleDrive(data) {
         if (!data.phase_plan && !data.phase_test) {
             return;
         }
-        return await GasApi.postGoogleDrive(data.task_name);
+        return await DataApi.postGoogleDrive(data.task_name);
     }
 }

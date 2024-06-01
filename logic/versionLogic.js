@@ -126,7 +126,7 @@ module.exports = class VersionLogic {
             }
             convertedUserList[userList[i].redmineUserId] = userList[i];
         }
-        convertedUserList[0] = new User(0, "共通", null, null, null);
+        convertedUserList[0] = new User(0, "共通", null, null, null, null);
 
         let ignoreIdList = [];
         let noParentTicketCount = 0;

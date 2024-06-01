@@ -1,12 +1,18 @@
 const AbstractApi = require("./abstractApi");
 const store = require('../util/storeUtil')
+const ExecuteStyle = require("../env/env");
 
-module.exports = class GasApi extends AbstractApi {
+module.exports = class DataApi extends AbstractApi {
     static async getUserList() {
-        const url = await store.get("gasGetListAPIEndPoint");
+        const executeStyle = new ExecuteStyle();
+        let url = await store.get("gasGetListAPIEndPoint" + executeStyle.style);
         const query = {
-            "target": "user"
+            "target": "user",
+            "id": "all"
         };
+        if (executeStyle.isWeb()) {
+            url = url + '/user';
+        }
         let res = await this.callGetApi(url, {}, query);
         if (typeof res?.userList === "undefined") {
             throw new Error("ユーザ情報の取得に失敗しました。");
@@ -15,7 +21,8 @@ module.exports = class GasApi extends AbstractApi {
     }
 
     static async getTemplateTicketList() {
-        const url = await store.get("gasGetListAPIEndPoint");
+        const executeStyle = new ExecuteStyle();
+        const url = await store.get("gasGetListAPIEndPoint" + executeStyle.style);
         const query = {
             "target": "template_ticket",
             "template_ticket_id": "all"
@@ -28,7 +35,8 @@ module.exports = class GasApi extends AbstractApi {
     }
 
     static async getScheduleListFromGoogleCalendar(from, to, versionName) {
-        const url = await store.get("gasGetListAPIEndPoint");
+        const executeStyle = new ExecuteStyle();
+        const url = await store.get("gasGetListAPIEndPoint" + executeStyle.style);
         const calendarId = await store.get("gasPostScheduleAPICalenderId");
         const query = {
             "target": "calendar",
@@ -46,7 +54,8 @@ module.exports = class GasApi extends AbstractApi {
     }
 
     static async getScheduleList() {
-        const url = await store.get("gasGetListAPIEndPoint");
+        const executeStyle = new ExecuteStyle();
+        const url = await store.get("gasGetListAPIEndPoint" + executeStyle.style);
         const query = {
             "target": "schedule",
             "schedule_id": "all"
@@ -66,7 +75,8 @@ module.exports = class GasApi extends AbstractApi {
      * @return {Promise<null>}
      */
     static async postGoogleCalendarScheduleForAllDays(ymd, title) {
-        const url = await store.get("gasPostScheduleAPIEndPoint");
+        const executeStyle = new ExecuteStyle();
+        const url = await store.get("gasPostScheduleAPIEndPoint" + executeStyle.style);
         const calendarId = await store.get("gasPostScheduleAPICalenderId");
         const request = {
             "target": "calendar",
@@ -90,7 +100,8 @@ module.exports = class GasApi extends AbstractApi {
      * @return {Promise<null>}
      */
     static async postGoogleCalendarScheduleForMeeting(ymd, title, start, end) {
-        const url = await store.get("gasPostScheduleAPIEndPoint");
+        const executeStyle = new ExecuteStyle();
+        const url = await store.get("gasPostScheduleAPIEndPoint" + executeStyle.style);
         const calendarId = await store.get("gasPostScheduleAPICalenderId");
         const request = {
             "target": "calendar",
@@ -116,7 +127,8 @@ module.exports = class GasApi extends AbstractApi {
      * @return {Promise<null>}
      */
     static async deleteGoogleCalendarSchedule(from, to, title, versionName) {
-        const url = await store.get("gasPostScheduleAPIEndPoint");
+        const executeStyle = new ExecuteStyle();
+        const url = await store.get("gasPostScheduleAPIEndPoint" + executeStyle.style);
         const calendarId = await store.get("gasPostScheduleAPICalenderId");
         const request = {
             "target": "delete_event",
@@ -134,7 +146,8 @@ module.exports = class GasApi extends AbstractApi {
     }
 
     static async getCustomFieldList() {
-        const url = await store.get("gasGetListAPIEndPoint");
+        const executeStyle = new ExecuteStyle();
+        const url = await store.get("gasGetListAPIEndPoint" + executeStyle.style);
         const query = {
             "target": "custom_field",
             "custom_field_id": "all"
@@ -147,7 +160,8 @@ module.exports = class GasApi extends AbstractApi {
     }
 
     static async postGoogleDrive(taskName) {
-        const url = await store.get("gasGetListAPIEndPoint");
+        const executeStyle = new ExecuteStyle();
+        const url = await store.get("gasGetListAPIEndPoint" + executeStyle.style);
         const sendTargetId = await store.get("gasPostGoogleDriveAPITargetFolderId") ?? "";
         if (sendTargetId.length < 1) {
             throw new Error("google driveのIDが未設定です。configより設定してください。")
@@ -169,7 +183,8 @@ module.exports = class GasApi extends AbstractApi {
         if (folderId.length < 1) {
             throw new Error("対象フォルダのIDが不正です。");
         }
-        const url = await store.get("gasGetListAPIEndPoint");
+        const executeStyle = new ExecuteStyle();
+        const url = await store.get("gasGetListAPIEndPoint" + executeStyle.style);
         const templateSheetId = await store.get("gasPostTestTemplateSheetAPITemplateSpreadSheetId");
         if (templateSheetId.length < 1) {
             throw new Error("GASテストテンプレート生成APIのテンプレートシートIDが未設定です。configより設定してください。");
@@ -184,5 +199,23 @@ module.exports = class GasApi extends AbstractApi {
             throw new Error("Google driveの作成に失敗しました。");
         }
         return res.data.id;
+    }
+
+    static async getUserForAuth(password) {
+        const executeStyle = new ExecuteStyle();
+        let url = await store.get("gasGetListAPIEndPoint" + executeStyle.style);
+        const query = {
+            "target": "user",
+            "id": "auth",
+            "password": password
+        };
+        if (executeStyle.isWeb()) {
+            url = url + '/user';
+        }
+        let res = await this.callGetApi(url, {}, query);
+        if (typeof res?.result === "undefined") {
+            throw new Error("ユーザ情報の取得に失敗しました。");
+        }
+        return res.result;
     }
 }

@@ -1,6 +1,8 @@
+const DataApi = require("../api/DataApi");
 
 module.exports = class UserLogic {
-    authLoginIsValid(userName, password) {
-        return true;
+    async authLoginIsValid(userName, password) {
+        const responseUserList = await DataApi.getUserForAuth(password);
+        return !!responseUserList;
     }
 }
