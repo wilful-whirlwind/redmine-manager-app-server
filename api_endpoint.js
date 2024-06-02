@@ -16,7 +16,7 @@ const router = require('./router'); // routerを読み込み
 
 const defaultHeader = {
     'Content-Type': 'application/json',
-    "Access-Control-Allow-Origin": "http://localhost:8080",
+    "Access-Control-Allow-Origin": "https://localhost:8080",
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT",
     "Access-Control-Allow-Headers": "Authorization, Content-Type, X-CSRF-Token"

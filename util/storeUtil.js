@@ -21,7 +21,7 @@ const getFromStore = async function(key) {
     if (style.isApp()) {
         return await store.get(key);
     } else if(style.isWeb()) {
-        const result = await get('http://localhost:8080/config?key=' + key);
+        const result = await get('https://localhost:8080/config?key=' + key);
         if (result.data?.result) {
             return result.data.result.Value;
         }
