@@ -1,6 +1,7 @@
 var parser = require('url');
 var fs = require('fs');
 var handlers = {};
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 exports.get = (url, handler) => {
     handlers["GET/"+url] = handler;
@@ -21,7 +22,7 @@ exports.post = (url, handler) => {
     handlers["OPTIONS/"+url] = async (req, res) => {
         res.writeHead(200, {
             'Content-Type': 'application/json',
-            "Access-Control-Allow-Origin": "http://localhost:8080",
+            "Access-Control-Allow-Origin": "https://localhost:8080",
             "Access-Control-Allow-Credentials": "true",
             "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT",
             "Access-Control-Allow-Headers": "Authorization, Content-Type, X-CSRF-Token"

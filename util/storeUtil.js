@@ -11,7 +11,7 @@ const saveToStore = async function (key, data) {
         let request = {};
         request.Key = key;
         request.Value = data;
-        const result = await post('http://localhost:8080/config', request);
+        const result = await post('https://localhost:8080/config', request);
         console.log(result);
     }
 }
