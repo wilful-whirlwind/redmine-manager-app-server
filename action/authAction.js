@@ -37,7 +37,7 @@ async function executeForWeb(event, data) {
         const result = await logic.authLoginIsValid(data.user_name, data.password);
         return createResponse(event, {
             "status": "success",
-            "result": result,
+            "user": result,
         });
     } catch(e) {
         return createResponse(event, {
