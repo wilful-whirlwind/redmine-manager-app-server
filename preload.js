@@ -1,6 +1,17 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI',{
+    authUser: function(userName, password) {
+        return {
+            status: "success",
+            user: {
+                Id: 1000
+            }
+        };
+    },
+    getEnv: function () {
+      return "APP";
+    },
     initializeVersion: function(data) {
         return ipcRenderer.sendSync('dialog:redmineVersion', data);
         // ipcRenderer.send('sendMessage', res);
