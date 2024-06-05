@@ -3,6 +3,7 @@ const getRedmineVersionListAction = require("./action/getRedmineVersionListActio
 const authAction = require("./action/authAction");
 const loadConfigAction = require("./action/loadConfigAction");
 const saveConfigAction = require("./action/saveConfigAction");
+const getUserListAction = require("./action/getUserListAction");
 
 // server.js
 const http = require('http');
@@ -38,6 +39,13 @@ router.post('/auth', async (req, res) => { // httpメソッドが「POST」、�
     const result = await authAction(req, req.body);
     res.end(JSON.stringify(result));
 });
+
+router.get('/user', async (req, res) => { // httpメソッドが「POST」、パスが「/」を登録
+    res.writeHead(200,  defaultHeader);
+    const result = await getUserListAction(req, req.body);
+    res.end(JSON.stringify(result));
+});
+
 
 router.get('/config', async (req, res) => { // httpメソッドが「POST」、パスが「/」を登録
     res.writeHead(200,  defaultHeader);

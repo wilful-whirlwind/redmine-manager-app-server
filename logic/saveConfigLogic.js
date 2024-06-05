@@ -43,11 +43,12 @@ module.exports = class SaveConfigLogic {
             platformAPIAccessToken: ""
         };
         const executeStyle = new ExecuteStyle();
+        const savedConfigList = await store.getAll();
         for (let property in configInfo) {
             if (['gasGetListAPIEndPoint', 'gasPostScheduleAPIEndPoint'].includes(property)) {
                 property = property + executeStyle.style
             }
-            configInfo[property] = await store.get(property) ?? "";
+            configInfo[property] = savedConfigList[property] ?? "";
         }
         return configInfo;
     }

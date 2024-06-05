@@ -29,7 +29,21 @@ const getFromStore = async function(key) {
     }
 }
 
+const getAllFromStore = async function() {
+    const style = new ExecuteStyle();
+    if (style.isApp()) {
+        return await store.get(key);
+    } else if(style.isWeb()) {
+        const result = await get('https://localhost:8080/config?key=all');
+        if (result.data?.result) {
+            return result.data.result;
+        }
+        return null;
+    }
+}
+
 module.exports = {
     get: getFromStore,
+    getAll: getAllFromStore,
     set: saveToStore
 }
