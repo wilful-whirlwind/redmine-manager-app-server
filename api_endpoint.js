@@ -4,6 +4,7 @@ const authAction = require("./action/authAction");
 const loadConfigAction = require("./action/loadConfigAction");
 const saveConfigAction = require("./action/saveConfigAction");
 const getUserListAction = require("./action/getUserListAction");
+const updateUserAction = require("./action/updateUserAction");
 
 // server.js
 const http = require('http');
@@ -42,7 +43,14 @@ router.post('/auth', async (req, res) => { // httpメソッドが「POST」、�
 
 router.get('/user', async (req, res) => { // httpメソッドが「POST」、パスが「/」を登録
     res.writeHead(200,  defaultHeader);
-    const result = await getUserListAction(req, req.body);
+    const result = await getUserListAction(req, req);
+    res.end(JSON.stringify(result));
+});
+
+router.post('/user', async (req, res) => {
+    const body = req.body;
+    res.writeHead(200,  defaultHeader);
+    const result = await updateUserAction(req, req.body);
     res.end(JSON.stringify(result));
 });
 

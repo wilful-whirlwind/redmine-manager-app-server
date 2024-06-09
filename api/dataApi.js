@@ -218,4 +218,20 @@ module.exports = class DataApi extends AbstractApi {
         }
         return res.result;
     }
+
+    static async updateUser(id, name, mailAddress) {
+        const executeStyle = new ExecuteStyle();
+        const url = await store.get("gasGetListAPIEndPoint" + executeStyle.style);
+        const request = {
+            "target": "user",
+            "Id": id,
+            "Name": name,
+            "MailAddress": mailAddress,
+        };
+        let res = await this.callPatchApi(url + "/user", {}, request);
+        if (res?.data.status !== "created" && res?.data.status !== "not found") {
+            throw new Error("Google driveの作成に失敗しました。");
+        }
+        return res.data;
+    }
 }

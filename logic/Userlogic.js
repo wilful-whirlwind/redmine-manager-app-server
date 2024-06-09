@@ -11,4 +11,8 @@ module.exports = class UserLogic {
     async getUserList() {
         return await DataApi.getUserList();
     }
+
+    async updateUser(id, name, mailAddress) {
+        return await DataApi.updateUser(id, name, mailAddress);
+    }
 }

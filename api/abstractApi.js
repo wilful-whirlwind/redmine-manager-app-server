@@ -24,6 +24,25 @@ module.exports = class AbstractApi {
     }
 
     /**
+     * execute post api
+     * @param uri
+     * @param headers
+     * @param request
+     * @return {Promise<null>}
+     */
+    static async callPatchApi(uri, headers, request) {
+        let response = null;
+        headers = await this.setBasicAuth(headers);
+        try {
+            response = await axios.patch(uri, request, {headers: headers});
+        } catch (e) {
+            console.error(e);
+            throw new Error("APIの実行に失敗しました。")
+        }
+        return response;
+    }
+
+    /**
      * execute get api
      * @param uri
      * @param headers

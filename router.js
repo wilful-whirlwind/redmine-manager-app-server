@@ -31,6 +31,20 @@ exports.post = (url, handler) => {
     };
 }
 
+exports.patch = (url, handler) => {
+    handlers["PATCH/"+url] = handler;
+    handlers["OPTIONS/"+url] = async (req, res) => {
+        res.writeHead(200, {
+            'Content-Type': 'application/json',
+            "Access-Control-Allow-Origin": "https://localhost:8080",
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, PATCH",
+            "Access-Control-Allow-Headers": "Authorization, Content-Type, X-CSRF-Token"
+        });
+        res.end();
+    };
+}
+
 exports.route = (req) => {
     var url = parser.parse(req.url, true);
     var handler = handlers[req.method+"/"+url.pathname];
