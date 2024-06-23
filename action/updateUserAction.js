@@ -33,7 +33,12 @@ async function executeForWeb(event, data) {
 
     const logic = new UserLogic();
     try {
-        const result = await logic.updateUser(data.id, data.user_name, data.mail_address);
+        let result = null;
+        if (typeof data?.id === "undefined") {
+            result = await logic.createUser(data.user_name, data.mail_address, data.password);
+        } else {
+            result = await logic.updateUser(data.id, data.user_name, data.mail_address);
+        }
         return createResponse(event, {
             "status": "success",
             "user": result,

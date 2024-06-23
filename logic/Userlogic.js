@@ -15,4 +15,8 @@ module.exports = class UserLogic {
     async updateUser(id, name, mailAddress) {
         return await DataApi.updateUser(id, name, mailAddress);
     }
+
+    async createUser(name, mailAddress, password) {
+        return await DataApi.createUser(name, mailAddress, password);
+    }
 }
