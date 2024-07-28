@@ -32,7 +32,30 @@ const getFromStore = async function(key) {
 const getAllFromStore = async function() {
     const style = new ExecuteStyle();
     if (style.isApp()) {
-        return await store.get(key);
+        let configInfo = {
+            basicAuthUserId: "",
+            basicAuthPassWord: "",
+            redmineUri: "",
+            redmineAccessToken: "",
+            gasGetListAPIEndPointAPP: "",
+            gasPostScheduleAPIEndPointAPP: "",
+            gasPostScheduleAPICalenderId: "",
+            gasPostGoogleDriveAPITargetFolderId : "",
+            gasPostTestTemplateSheetAPITemplateSpreadSheetId: "",
+            gasPostScheduleAPIAccessToken: "",
+            gasPostScheduleAPIProjectFolderId: "",
+            gasPostScheduleAPITemplateProjectFolderId: "",
+            gasPostResultAPIEndPoint: "",
+            gasPostResultAPIAccessToken: "",
+            slackMailAddressForRequestToMember: "",
+            slackMailAddressForNoticeToCS: "",
+            platformAPIAccessToken: ""
+        };
+        let result = {};
+        for (let property in configInfo) {
+            result[property] = store.get(property);
+        }
+        return result;
     } else if(style.isWeb()) {
         const result = await get('https://localhost:8080/config?key=all');
         if (result.data?.result) {

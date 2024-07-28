@@ -5,11 +5,13 @@ module.exports = class SaveConfigLogic {
     async saveConfig(configInfo) {
         console.log(configInfo);
         const executeStyle = new ExecuteStyle();
+        let originProperty = "";
         for (let property in configInfo) {
+            originProperty = property;
             if (['gasGetListAPIEndPoint', 'gasPostScheduleAPIEndPoint'].includes(property)) {
                 property = property + executeStyle.style
             }
-            await store.set(property, configInfo[property]);
+            await store.set(property, configInfo[originProperty]);
         }
         return true;
     }
@@ -44,11 +46,13 @@ module.exports = class SaveConfigLogic {
         };
         const executeStyle = new ExecuteStyle();
         const savedConfigList = await store.getAll();
+        let originProperty = "";
         for (let property in configInfo) {
+            originProperty = property;
             if (['gasGetListAPIEndPoint', 'gasPostScheduleAPIEndPoint'].includes(property)) {
                 property = property + executeStyle.style
             }
-            configInfo[property] = savedConfigList[property] ?? "";
+            configInfo[originProperty] = savedConfigList[property] ?? "";
         }
         return configInfo;
     }
